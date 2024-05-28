@@ -2,10 +2,13 @@ package com.hanieum.llmproject.service;
 
 import com.hanieum.llmproject.dto.UserLoginRequestDto;
 import com.hanieum.llmproject.dto.UserLoginResponseDto;
+import com.hanieum.llmproject.dto.UserSignupRequestDto;
+import com.hanieum.llmproject.dto.UserSignupResponseDto;
 import com.hanieum.llmproject.model.User;
 import com.hanieum.llmproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,6 +23,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    //private final InMemoryUserDetailsManager inMemoryUserDetailsManager; (spring security떄문에 주석으로 해둠)
 
 
     @Override
@@ -59,6 +63,25 @@ public class UserServiceImpl implements UserService {
     private String generateToken(String userId) {
         // Fixme JwtUtil.generateToken 호출
         return "";
+    }
+
+    //회원가입
+    @Override
+    public Long signUp(UserSignupRequestDto requestDto) {
+
+        //검증
+        if (userRepository.findByUserId(requestDto.getUserId()).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 아이디 입니다.");
+        }
+        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
+        }
+
+        // 등록
+        User user = userRepository.save(requestDto.toEntity());
+
+        // todo passwordEncoder 적용
+        return user.getUserNo();
     }
 }
 
