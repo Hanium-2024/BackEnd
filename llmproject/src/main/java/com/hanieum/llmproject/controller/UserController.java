@@ -2,8 +2,11 @@ package com.hanieum.llmproject.controller;
 
 import com.hanieum.llmproject.dto.UserLoginRequestDto;
 import com.hanieum.llmproject.dto.UserLoginResponseDto;
+import com.hanieum.llmproject.dto.UserSignupRequestDto;
+import com.hanieum.llmproject.dto.UserSignupResponseDto;
 import com.hanieum.llmproject.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,13 @@ public class UserController {
     public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginRequestDto requestDto) {
         return ResponseEntity.ok(userService.login(requestDto));
     }
+
+    @PostMapping("/signup")
+    public Long signup(@Valid @RequestBody UserSignupRequestDto requestDto) {
+        return userService.signUp(requestDto);
+    }
+
+
 
 
 }
