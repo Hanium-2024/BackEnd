@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class UserLoginRequestDto {
-    private Long userId;
+    private String loginId;
     private String password;
 }

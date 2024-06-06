@@ -1,21 +1,25 @@
 package com.hanieum.llmproject.service;
 
+import com.hanieum.llmproject.config.jwt.JwtUtil;
+import com.hanieum.llmproject.dto.TokenDto;
 import com.hanieum.llmproject.dto.UserLoginRequestDto;
-import com.hanieum.llmproject.dto.UserLoginResponseDto;
+import com.hanieum.llmproject.dto.UserResponseDto;
 import com.hanieum.llmproject.dto.UserSignupRequestDto;
-import com.hanieum.llmproject.dto.UserSignupResponseDto;
+import com.hanieum.llmproject.exception.ErrorCode;
+import com.hanieum.llmproject.exception.errortype.CustomException;
 import com.hanieum.llmproject.model.User;
 import com.hanieum.llmproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 /**
  * 로그인과 로그아웃, 회원가입 기능을 구현한 서비스 클래스
- *
  */
 @RequiredArgsConstructor
 @Service
@@ -23,65 +27,47 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    //private final InMemoryUserDetailsManager inMemoryUserDetailsManager; (spring security떄문에 주석으로 해둠)
-
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @Override
-    public User join(String username, String password) {
-        return null;
+    public TokenDto login(UserLoginRequestDto requestDto) {
+        // LoginId와 Password를 기반으로 AuthenticationToken 생성
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(requestDto.getLoginId(), requestDto.getPassword());
+
+        /*
+         실제 유저 검증이 일어나는 부분
+         CustomUserDetailsService의 loadUserByUsername 메소드가 실행
+         */
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authToken);
+
+        return jwtUtil.createToken(authentication);
     }
 
     @Override
-    public UserLoginResponseDto login(UserLoginRequestDto requestDto) {
-        Optional<User> optionalUser = userRepository.findById(requestDto.getUserId());
+    public UserResponseDto signUp(UserSignupRequestDto requestDto) {
+        checkDuplicatedLoginId(requestDto.getLoginId());
+        checkDuplicatedEmail(requestDto.getEmail());
 
-        // userId를 찾을 수 없을 경우
-        if (optionalUser.isEmpty()) {
-            return UserLoginResponseDto.builder()
-                    .message("User not found")
-                    .token(null)
-                    .build();
-        }
-
-        User user = optionalUser.get();
-        // password가 일치하지 않는 경우
-        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            return UserLoginResponseDto.builder()
-                    .message("Invalid Password")
-                    .token(null)
-                    .build();
-        }
-
-        // 로그인 성공 시 Jwt 생성하여 ResponseDto token에 담기
-        String token = generateToken(user.getUserId());
-        return UserLoginResponseDto.builder()
-                .message("Login Success")
-                .token(token)
-                .build();
+        return UserResponseDto.fromEntity(
+                userRepository.save(
+                        requestDto.toEntity(
+                                passwordEncoder.encode(requestDto.getPassword())
+                        )
+                ));
     }
 
-    private String generateToken(String userId) {
-        // Fixme JwtUtil.generateToken 호출
-        return "";
+    private void checkDuplicatedLoginId(String loginId) {
+        if (userRepository.existsByLoginId(loginId)) {
+            throw new CustomException(ErrorCode.ID_DUPLICATED);
+        }
     }
 
-    //회원가입
-    @Override
-    public Long signUp(UserSignupRequestDto requestDto) {
-
-        //검증
-        if (userRepository.findByUserId(requestDto.getUserId()).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 아이디 입니다.");
+    private void checkDuplicatedEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            // Fixme Custom Exception 처리 필요
+            throw new CustomException(ErrorCode.EMAIL_DUPLICATED);
         }
-        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
-        }
-
-        // 등록
-        User user = userRepository.save(requestDto.toEntity());
-
-        // todo passwordEncoder 적용
-        return user.getUserNo();
     }
 }
 

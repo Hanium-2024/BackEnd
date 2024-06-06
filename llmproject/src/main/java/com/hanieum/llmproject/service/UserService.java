@@ -1,18 +1,15 @@
 package com.hanieum.llmproject.service;
 
+import com.hanieum.llmproject.dto.TokenDto;
 import com.hanieum.llmproject.dto.UserLoginRequestDto;
-import com.hanieum.llmproject.dto.UserLoginResponseDto;
+import com.hanieum.llmproject.dto.UserResponseDto;
 import com.hanieum.llmproject.dto.UserSignupRequestDto;
-import com.hanieum.llmproject.dto.UserSignupResponseDto;
-import com.hanieum.llmproject.model.User;
+import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-    // Fixme 매개변수와 리턴 타입 Dto로 변환 필요
-    User join(String username, String password);
-    UserLoginResponseDto login(UserLoginRequestDto userLoginRequestDto);
+    TokenDto login(UserLoginRequestDto requestDto);
 
-    //회원가입
-    Long signUp(UserSignupRequestDto requestDto);
+    UserResponseDto signUp(UserSignupRequestDto requestDto);
 }
 

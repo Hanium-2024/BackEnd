@@ -14,7 +14,7 @@ import lombok.Getter;
 public class UserSignupRequestDto {
 
     @NotBlank(message = "아이디를 입력해주세요.")
-    private String userId;
+    private String loginId;
     @NotBlank(message = "비밀번호를 입력해주세요.")
     private String password;
     @NotBlank(message = "이름을 입력해주세요.")
@@ -23,12 +23,12 @@ public class UserSignupRequestDto {
     private String email;
 
     @Builder
-    public User toEntity() {
+    public User toEntity(String password) {
         return User.builder()
-                .userId(userId)
+                .loginId(this.loginId)
                 .password(password)
-                .username(username)
-                .email(email)
+                .username(this.username)
+                .email(this.email)
                 .build();
     }
 }
