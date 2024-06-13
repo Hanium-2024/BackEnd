@@ -2,21 +2,17 @@ package com.hanieum.llmproject.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanieum.llmproject.config.jwt.ExceptionHandlerFilter;
-import com.hanieum.llmproject.config.jwt.JwtAuthenticationEntryPoint;
-import com.hanieum.llmproject.config.jwt.JwtTokenFilter;
+import com.hanieum.llmproject.config.jwt.JwtFilter;
 import com.hanieum.llmproject.config.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +20,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -35,6 +30,14 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     };
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring()
+                .requestMatchers("/user/login")
+                .requestMatchers("/user/signup")
+                .requestMatchers("/user/reissue");
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -50,15 +53,12 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((authorizeHttpRequest) ->
                         authorizeHttpRequest
-                                .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/user/signup").permitAll()
+                                .requestMatchers("/user/login").permitAll()
+                                .requestMatchers("/user/signup").permitAll()
                                 .anyRequest().authenticated())
 
-                .exceptionHandling((exceptionHandling) ->
-                        exceptionHandling.authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper)))
-
-                .addFilterBefore(new JwtTokenFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
-//                .addFilterBefore(new ExceptionHandlerFilter(), JwtTokenFilter.class);
+                .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new ExceptionHandlerFilter(), JwtFilter.class);
 
         return http.build();
     }

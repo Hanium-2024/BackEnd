@@ -14,6 +14,6 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<Response<?>> handleDuplicateException(CustomException ex) {
         ErrorCode errorCode = ex.getErrorCode();
 
-        return new ResponseEntity<>(new Response<>("false", errorCode.getMessage()), errorCode.getStatus());
+        return new ResponseEntity<>(Response.fail(errorCode.getMessage()), errorCode.getStatus());
     }
 }

@@ -3,8 +3,8 @@ package com.hanieum.llmproject.config.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanieum.llmproject.dto.Response;
 import com.hanieum.llmproject.exception.ErrorCode;
+import com.hanieum.llmproject.exception.errortype.CustomException;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,6 +27,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
+        } catch (CustomException e) {
+            setErrorResponse(response, e.getErrorCode());
         } catch (MalformedJwtException e) {
             log.error("지원되지 않는 형식의 토큰입니다");
             setErrorResponse(response, ErrorCode.INVALID_TOKEN);
@@ -35,10 +37,9 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             setErrorResponse(response, ErrorCode.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
             log.error("만료된 토큰입니다");
-            setErrorResponse(response, ErrorCode.EXPIRED_TOKEN);
+            setErrorResponse(response, ErrorCode.EXPIRED_ACCESS_TOKEN);
         }
     }
-
     private void setErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(errorCode.getStatus().value());
@@ -48,7 +49,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
         response.getWriter().write(
                 objectMapper.writeValueAsString(
-                        new Response<>("false", errorCode.getMessage())
+                        Response.fail(errorCode.getMessage())
                 )
         );
     }
