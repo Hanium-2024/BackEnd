@@ -18,5 +18,4 @@ public class GPTController {
     public ResponseEntity<?> sendQuestion(@RequestBody String msg) throws JsonProcessingException {
         return gptService.getAssisantMsg(msg);
     }
-
 }
