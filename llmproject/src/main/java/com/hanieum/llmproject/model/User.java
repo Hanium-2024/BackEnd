@@ -9,12 +9,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
+
+
 @Builder
 @Getter
-@Entity
-@Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name = "users")
+@Entity
 public class User implements UserDetails {
 
     @Id
@@ -52,3 +54,5 @@ public class User implements UserDetails {
         return true;
     }
 }
+
+
