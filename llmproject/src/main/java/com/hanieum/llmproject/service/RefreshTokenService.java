@@ -55,7 +55,7 @@ public class RefreshTokenService {
             throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
 
-        if (requestToken.equals(requestToken)) {
+        if (refreshToken.equals(requestToken)) {
             return;
         }
 
