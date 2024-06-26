@@ -3,9 +3,11 @@ package com.hanieum.llmproject.config.jwt;
 import com.hanieum.llmproject.dto.TokenDto;
 import com.hanieum.llmproject.exception.ErrorCode;
 import com.hanieum.llmproject.exception.errortype.CustomException;
-import com.hanieum.llmproject.repository.RefreshTokenRepository;
+import com.hanieum.llmproject.model.User;
 import com.hanieum.llmproject.service.RefreshTokenService;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,9 +48,10 @@ public class JwtUtil implements Serializable {
         this.refreshTokenService = refreshTokenService;
     }
 
-    public TokenDto createToken(String loginId) {
-        String accessToken = createAccessToken(loginId);
-        String refreshToken = refreshTokenService.createRefreshToken(loginId);
+    public TokenDto createToken(User user) {
+
+        String accessToken = createAccessToken(user.getLoginId());
+        String refreshToken = refreshTokenService.createRefreshToken(user);
 
         return TokenDto.buildToken(accessToken, refreshToken);
     }
