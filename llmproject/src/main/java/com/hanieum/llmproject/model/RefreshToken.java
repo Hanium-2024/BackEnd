@@ -1,9 +1,6 @@
 package com.hanieum.llmproject.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.validator.constraints.UniqueElements;
 
@@ -15,18 +12,19 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class RefreshToken {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "REFRESHTOKEN_ID")
     private Long id;
-
     private String token;
-    private String loginId;
+    @OneToOne
+    @JoinColumn(name = "USER_ID")
+    private User user;
     private Date expirationDate;
 
-    public static RefreshToken buildRefreshToken(String token, String loginId, Date expirationDate) {
+    public static RefreshToken buildRefreshToken(String token, User user, Date expirationDate) {
         return RefreshToken.builder()
                 .token(token)
-                .loginId(loginId)
+                .user(user)
                 .expirationDate(expirationDate)
                 .build();
     }

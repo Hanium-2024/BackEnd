@@ -1,14 +1,14 @@
 package com.hanieum.llmproject.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 public class Category {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryId;
-    private String categoryName; // Enum으로 변경 고려
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "CATEGORY_ID")
+    private Long id;
+    @Enumerated(EnumType.STRING)
+    private CategoryType categoryType;
 }
