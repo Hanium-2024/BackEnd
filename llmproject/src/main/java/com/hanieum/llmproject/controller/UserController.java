@@ -10,8 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
+@RequestMapping("/users")
 @RestController
-@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
