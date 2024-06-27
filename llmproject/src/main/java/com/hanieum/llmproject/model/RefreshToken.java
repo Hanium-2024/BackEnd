@@ -36,4 +36,8 @@ public class RefreshToken {
 
         return false;
     }
+
+    public boolean isSame(String otherToken) {
+        return token.equals(otherToken);
+    }
 }

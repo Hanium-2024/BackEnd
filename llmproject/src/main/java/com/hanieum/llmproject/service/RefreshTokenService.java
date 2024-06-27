@@ -57,11 +57,9 @@ public class RefreshTokenService {
             throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
 
-        if (refreshToken.equals(requestToken)) {
-            return;
+        if (!refreshToken.isSame(requestToken)) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
-
-        throw new CustomException(ErrorCode.INVALID_TOKEN);
     }
 
     private RefreshToken loadByUser(User user) {
