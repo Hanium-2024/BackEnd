@@ -1,14 +1,26 @@
 package com.hanieum.llmproject.model;
 
-import jakarta.persistence.*;
-import lombok.Getter;
+import com.hanieum.llmproject.exception.ErrorCode;
+import com.hanieum.llmproject.exception.errortype.CustomException;
 
-@Getter
-@Entity
-public class Category {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CATEGORY_ID")
-    private Long id;
-    @Enumerated(EnumType.STRING)
-    private CategoryType categoryType;
+import java.util.Arrays;
+
+public enum Category {
+    PLAN,
+    DESIGN,
+    CODE,
+    TEST,
+    DEPLOY;
+
+    public static boolean isValid(String value) {
+        return Arrays.stream(Category.values())
+                .anyMatch(category -> category.name().equalsIgnoreCase(value));
+    }
+
+    public static Category fromString(String value) {
+        return Arrays.stream(Category.values())
+                .filter(category -> category.name().equalsIgnoreCase(value))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_VALID));
+    }
 }
