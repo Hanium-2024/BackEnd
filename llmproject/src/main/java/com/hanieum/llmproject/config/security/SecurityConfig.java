@@ -34,9 +34,9 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
-                .requestMatchers("/user/login")
-                .requestMatchers("/user/signup")
-                .requestMatchers("/user/reissue");
+                .requestMatchers("/users/login")
+                .requestMatchers("/users/signup")
+                .requestMatchers("/users/reissue");
     }
 
     @Bean
@@ -53,8 +53,8 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((authorizeHttpRequest) ->
                         authorizeHttpRequest
-                                .requestMatchers("/user/login").permitAll()
-                                .requestMatchers("/user/signup").permitAll()
+                                .requestMatchers("/users/login").permitAll()
+                                .requestMatchers("/users/signup").permitAll()
                                 .anyRequest().authenticated())
 
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
