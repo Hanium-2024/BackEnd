@@ -15,8 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLOutput;
-
 /**
  * 로그인과 로그아웃, 회원가입 기능을 구현한 서비스 클래스
  */
@@ -50,9 +48,7 @@ public class UserService {
 
         String loginId = getLoginIdFromAuthentication(authentication);
 
-        TokenDto token = jwtUtil.createToken(loginId);
-
-        return token;
+        return jwtUtil.createToken(findUserByLoginId(loginId));
     }
 
     public UserResponseDto signUp(UserSignupRequest requestDto) {
@@ -80,24 +76,31 @@ public class UserService {
     }
 
     public TokenDto reissue(TokenRequest tokenRequest) {
-        refreshTokenService.validateToken(tokenRequest.getLoginId(), tokenRequest.getRefreshToken());
+        User user = findUserByLoginId(tokenRequest.getLoginId());
 
-        return jwtUtil.createToken(tokenRequest.getLoginId());
+        refreshTokenService.validateToken(user, tokenRequest.getRefreshToken());
+
+        return jwtUtil.createToken(user);
     }
 
     public void logout(String loginId) {
-        refreshTokenService.deleteToken(loginId);
+        User user = findUserByLoginId(loginId);
+        refreshTokenService.deleteToken(user);
     }
 
     private String getLoginIdFromAuthentication(Authentication authentication) {
         Object principal = authentication.getPrincipal();
 
-        if (principal instanceof User) {
-            User user = (User) principal;
+        if (principal instanceof User user) {
             return user.getLoginId();
         }
 
-        throw new NullPointerException();
+        throw new CustomException(ErrorCode.USER_NOT_FOUND);
+    }
+
+    public User findUserByLoginId(String loginId) {
+        return userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 }
 

@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
     protected ResponseEntity<Response<?>> handleDuplicateException(CustomException ex) {
         ErrorCode errorCode = ex.getErrorCode();
-
+        ex.printStackTrace();
         return new ResponseEntity<>(Response.fail(errorCode.getMessage()), errorCode.getStatus());
     }
 }
