@@ -31,6 +31,12 @@ dependencies {
 	// OpenAI 자바 라이브러리( 2024.05.12 기준 최신 버전 : 0.18.2 )
 	implementation 'com.theokanning.openai-gpt3-java:service:0.18.2'
 
+	// macOs 전용
+	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
+
+	// sse 관련
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 }
