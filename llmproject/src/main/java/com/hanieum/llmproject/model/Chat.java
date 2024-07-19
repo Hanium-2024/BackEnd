@@ -1,10 +1,12 @@
 package com.hanieum.llmproject.model;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
+@NoArgsConstructor
 public class Chat {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CHAT_ID")
@@ -30,17 +32,11 @@ public class Chat {
     private LocalDateTime outputTime;
 
     // 메소드
-    public Chat() {}
-
     public Chat(Chatroom chatroomId, boolean isUserMessage, String message) {
         this.chatroom = chatroomId;
 
-        if (isUserMessage) {
-            this.contentType = ContentType.Prompt;
-        } else {
-            // TODO subString으로 IMAGE_output식별로 분리해서 저장
-            this.contentType = ContentType.Text_output;
-        }
+        // TODO subString으로 IMAGE_output식별로 분리해서 저장
+        this.contentType = isUserMessage ? ContentType.Prompt : ContentType.Text_output;
         this.content = message;
         this.outputTime = LocalDateTime.now();
 

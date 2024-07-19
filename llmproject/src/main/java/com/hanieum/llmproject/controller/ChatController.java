@@ -18,10 +18,10 @@ public class ChatController {
     private final ChatService chatService;
 
     // gpt응답기능
-    @PostMapping(value = "/ask/{chat_room_id}", produces = "text/event-stream")
+    @PostMapping(value = "/ask/{chatroomId}", produces = "text/event-stream")
     public ResponseEntity<SseEmitter> ask(Authentication authentication,
                                           @RequestParam("categoryType") String categoryType,
-                                          @PathVariable("chat_room_id") Long chat_room_id,
+                                          @PathVariable("chatroomId") Long chatroomId,
                                           @RequestBody QuestionDto request) {
         // 로그인정보 받아오기
         String loginId = authentication.getName();
@@ -32,7 +32,7 @@ public class ChatController {
         System.out.println("요청 = " + request.getQuestion());
 
         // 서비스 실행
-        SseEmitter response = chatService.ask(loginId, chat_room_id, categoryType, request.getQuestion());
+        SseEmitter response = chatService.ask(loginId, chatroomId, categoryType, request.getQuestion());
         return ResponseEntity.ok().body(response);
     }
 

@@ -37,10 +37,10 @@ public class ChatService {
     private final ChatroomService chatroomService;
 
     // 채팅내역 자동저장기능 (사용자답변, gpt답변분리)
-    private void save_chat(Long chatroomId, boolean isUserMessage, String message){
+    private void saveChat(Long chatroomId, boolean isUserMessage, String message){
 
-        Chatroom chatroom = chatroomService.find_chatroom(chatroomId);
-        if (chatroom == null){ throw new NullPointerException("채팅방을 찾을수없음.");}
+        Chatroom chatroom = chatroomService.findChatroom(chatroomId);
+        if (chatroom == null){ throw new IllegalArgumentException("채팅방을 찾을수없음.");}
 
         Chat chat = new Chat(chatroom, isUserMessage, message);
 
@@ -53,10 +53,10 @@ public class ChatService {
         List<ChatMessage> messages = new ArrayList<>();
 
         // 이전메세지 가져오기
-        Chatroom chatroom = chatroomService.find_chatroom(chatroomId);
+        Chatroom chatroom = chatroomService.findChatroom(chatroomId);
         if (chatroom == null){ throw new NullPointerException("채팅방을 찾을수없음.");}
 
-        List<Chat> chatHistory = chatRepository.findByChatroom(chatroom);
+        List<Chat> chatHistory = chatRepository.findAllByChatroom(chatroom);
 
         for (Chat chat : chatHistory) {
             messages.add(new ChatMessage(chat.isUserMessage() ? "user" : "assistant", chat.getMessage()));
@@ -79,13 +79,13 @@ public class ChatService {
     }
 
     // sse응답기능
-    public SseEmitter ask(String loginId, Long chat_room_id, String categoryType, String question) {
+    public SseEmitter ask(String loginId, Long chatroomId, String categoryType, String question) {
 
         // 질문 기반 채팅방제목생성
         String title = createTitle(question);
 
         // 채팅방 찾기(없으면 생성)
-        Long chatRoomId = chatroomService.find_chatroom(loginId, chat_room_id, categoryType, title);
+        Long chatRoomId = chatroomService.findOrCreateChatroom(loginId, chatroomId, categoryType, title);
 
         // gpt요청데이터 셋팅
         ChatRequestDto chatRequestDto = ChatRequestDto.builder().
@@ -112,8 +112,8 @@ public class ChatService {
                         if (line.equals("[DONE]")) {    // 응답 종료시
                             // 저장
                             emitter.send("chat_room_id: "+chatRoomId );
-                            save_chat(chatRoomId,true, question);      // 사용자질문저장
-                            save_chat(chatRoomId,false,sb.toString()); // gpt답변저장
+                            saveChat(chatRoomId,true, question);      // 사용자질문저장
+                            saveChat(chatRoomId,false,sb.toString()); // gpt답변저장
                             emitter.complete();
 
                             // 결과 확인용

@@ -1,6 +1,7 @@
 package com.hanieum.llmproject.model;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @DynamicUpdate
+@NoArgsConstructor
 public class Chatroom {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CHATROOM_ID")
@@ -42,8 +44,6 @@ public class Chatroom {
     }
 
     // 채팅저장관련
-    public Chatroom() {}
-
     public Chatroom(User user, Category category, String title) {
         this.user = user;
         this.category = category;

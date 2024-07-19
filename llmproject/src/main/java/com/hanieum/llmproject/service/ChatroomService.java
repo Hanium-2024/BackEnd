@@ -49,12 +49,13 @@ public class ChatroomService {
 
     // ---채팅 자동저장 관련---
     // 채팅방 찾기
-    public Chatroom find_chatroom(Long chatroomId) {
-        return chatroomRepository.findById(chatroomId).orElse(null);
+    public Chatroom findChatroom(Long chatroomId) {
+        return chatroomRepository.findById(chatroomId)
+                .orElseThrow(()-> new IllegalArgumentException("채팅방을 찾을수없습니다."));
     }
 
-    // 찾고 없으면 새채팅방 자동생성
-    public Long find_chatroom(String userId, Long chatroomId, String categoryType, String title) {
+    // 찾고 없으면 새채팅방 자동생성(채팅방없을시createChatroom호출)
+    public Long findOrCreateChatroom(String userId, Long chatroomId, String categoryType, String title) {
         Category category = loadCategory(categoryType);
         User user = loadUser(userId);
 
@@ -75,10 +76,10 @@ public class ChatroomService {
 
     // ---채팅 사용자 저장 관련---
     @Transactional
-    public void chatroomSave(String loginId, Long chat_room_id) {
+    public void saveChatroom(String loginId, Long chatroomId) {
         // 채팅방 찾기
         User user = loadUser(loginId);
-        Chatroom chatroom = chatroomRepository.findByUserAndId(user,chat_room_id)
+        Chatroom chatroom = chatroomRepository.findByUserAndId(user,chatroomId)
                 .orElseThrow(()-> new IllegalArgumentException("채팅방을 찾을수없음"));
 
         // 저장상태 업데이트
@@ -88,10 +89,10 @@ public class ChatroomService {
     }
 
     @Transactional
-    public void chatroomDelete(String loginId, Long chat_room_id) {
+    public void deleteChatroom(String loginId, Long chatroomId) {
         // 채팅방 찾기
         User user = loadUser(loginId);
-        Chatroom chatroom = chatroomRepository.findByUserAndId(user,chat_room_id)
+        Chatroom chatroom = chatroomRepository.findByUserAndId(user,chatroomId)
                 .orElseThrow(()-> new IllegalArgumentException("채팅방을 찾을수없음"));
 
         // 저장상태 업데이트

@@ -22,21 +22,21 @@ public class ChatroomController {
     }
 
     // 채팅방 사용자 저장기능
-    @PutMapping("/save/{chat_room_id}")
-    public Response<Void> saveChatRoom(Authentication authentication,
-                                       @PathVariable("chat_room_id") Long chat_room_id) {
+    @PutMapping("/save/{chatroomId}")
+    public Response<Void> chatroomSave(Authentication authentication,
+                                       @PathVariable("chatroomId") Long chatroomId) {
 
         String loginId = authentication.getName();
-        chatroomService.chatroomSave(loginId, chat_room_id);
+        chatroomService.saveChatroom(loginId, chatroomId);
         return Response.success("채팅방을 저장합니다.", null);
     }
     // 채팅방 사용자 삭제기능
-    @PutMapping("/delete/{chat_room_id}")
-    public Response<Void> deleteChatRoom(Authentication authentication,
-                                       @PathVariable("chat_room_id") Long chat_room_id) {
+    @PutMapping("/delete/{chatroomId}")
+    public Response<Void> chatroomDelete(Authentication authentication,
+                                       @PathVariable("chatroomId") Long chatroomId) {
 
         String loginId = authentication.getName();
-        chatroomService.chatroomDelete(loginId, chat_room_id);
+        chatroomService.deleteChatroom(loginId, chatroomId);
         return Response.success("저장된 채팅방을 삭제합니다.", null);
     }
 }
