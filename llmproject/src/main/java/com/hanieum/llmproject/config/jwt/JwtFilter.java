@@ -27,7 +27,6 @@ public class JwtFilter extends OncePerRequestFilter {
         jwtUtil.validateAccessToken(token);
 
         Authentication authentication = jwtUtil.getAuthentication(token);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         //추가 (sse 응답 access denied문제)
         SecurityContext context = SecurityContextHolder.getContext();
