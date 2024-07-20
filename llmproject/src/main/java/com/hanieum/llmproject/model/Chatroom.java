@@ -1,6 +1,7 @@
 package com.hanieum.llmproject.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @DynamicUpdate
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Chatroom {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CHATROOM_ID")
