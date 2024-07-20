@@ -23,7 +23,7 @@ public class ChatroomController {
 
     // 채팅방 사용자 저장기능
     @PutMapping("/save/{chatroomId}")
-    public Response<Void> chatroomSave(Authentication authentication,
+    public Response<Void> saveChatroom(Authentication authentication,
                                        @PathVariable("chatroomId") Long chatroomId) {
 
         String loginId = authentication.getName();
@@ -32,7 +32,7 @@ public class ChatroomController {
     }
     // 채팅방 사용자 삭제기능
     @PutMapping("/delete/{chatroomId}")
-    public Response<Void> chatroomDelete(Authentication authentication,
+    public Response<Void> deleteChatroom(Authentication authentication,
                                        @PathVariable("chatroomId") Long chatroomId) {
 
         String loginId = authentication.getName();
