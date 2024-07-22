@@ -18,18 +18,14 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'                           // jwt 라이브러리
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'com.h2database:h2'                                         // 개발단계 테스트를 위한 h2 db
 	implementation 'org.springframework.boot:spring-boot-starter-validation'	// 유효성검사 validation
+	implementation 'com.theokanning.openai-gpt3-java:service:0.18.2'        // OpenAI 자바 라이브러리(2024.05.12 기준 최선 버전 : 0.18.2)
+	implementation 'com.h2database:h2'                                         // 개발단계 테스트를 위한 h2 db
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testAnnotationProcessor 'org.projectlombok:lombok'
-
-	// OpenAI 자바 라이브러리( 2024.05.12 기준 최신 버전 : 0.18.2 )
-	implementation 'com.theokanning.openai-gpt3-java:service:0.18.2'
+	compileOnly 'org.projectlombok:lombok'
 
 	// macOs 전용
 	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
@@ -39,6 +35,10 @@ dependencies {
 
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
