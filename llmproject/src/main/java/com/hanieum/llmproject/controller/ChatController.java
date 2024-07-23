@@ -38,7 +38,7 @@ public class ChatController {
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("/chatrooms/{chatroomId}")
+    @GetMapping("/chats/{chatroomId}")
     public Response<List<String>> getChats(@PathVariable("chatroomId") Long chatroomId) {
         return Response.success("채팅을 불러왔습니다.", chatService.getChats(chatroomId));
     }

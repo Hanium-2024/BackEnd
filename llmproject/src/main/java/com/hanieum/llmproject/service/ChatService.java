@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatService {
 
-    private final ChatroomRepository chatroomRepository;
     @Value("#{'${openai.key}'.trim()}")
     private String token;
 

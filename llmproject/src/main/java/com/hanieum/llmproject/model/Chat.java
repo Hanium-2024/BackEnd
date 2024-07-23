@@ -44,6 +44,7 @@ public class Chat {
     }
 
     public LocalDateTime getOutputTime() { return outputTime; }
+
     public String getMessage() {
         return this.content;
     }
