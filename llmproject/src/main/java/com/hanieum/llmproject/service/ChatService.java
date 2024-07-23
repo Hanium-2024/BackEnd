@@ -3,6 +3,7 @@ package com.hanieum.llmproject.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanieum.llmproject.config.ChatGptConfig;
+import com.hanieum.llmproject.dto.Response;
 import com.hanieum.llmproject.dto.chat.ChatMessage;
 import com.hanieum.llmproject.dto.chat.ChatRequestDto;
 import com.hanieum.llmproject.dto.chat.ChatStreamResponseDto;
@@ -23,13 +24,16 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
+    private final ChatroomRepository chatroomRepository;
     @Value("#{'${openai.key}'.trim()}")
     private String token;
 
@@ -76,6 +80,16 @@ public class ChatService {
         String title = question.substring(0, endIndex);
         System.out.println("substring = " + title);
         return title;
+    }
+
+    public List<String> getChats(Long chatroomId) {
+        var chatroom = chatroomService.findChatroom(chatroomId);
+
+        return chatRepository.findAllByChatroom(chatroom)
+                .stream()
+                .sorted(Comparator.comparing(Chat::getOutputTime))
+                .map(Chat::getMessage)
+                .toList();
     }
 
     // sse응답기능
@@ -138,6 +152,4 @@ public class ChatService {
 
         return emitter;
     }
-
-
 }
