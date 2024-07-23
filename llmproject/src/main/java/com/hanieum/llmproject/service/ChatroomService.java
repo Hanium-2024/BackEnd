@@ -20,14 +20,14 @@ public class ChatroomService {
     private final UserService userService;
     private final ChatroomRepository chatroomRepository;
 
-    public Map<Long, String> getChatroomsBy(String loginId, String categoryType) {
+    public Map<Long, String> getChatrooms(String loginId, String categoryType) {
         User user = loadUser(loginId);
 
         Category category = loadCategory(categoryType);
 
         List<Chatroom> chatroomList = chatroomRepository.findAllByUserAndCategory(user, category);
 
-        return Chatroom.getChatrooms(chatroomList);
+        return Chatroom.getSavedChatrooms(chatroomList);
     }
 
     private User loadUser(String loginId) {

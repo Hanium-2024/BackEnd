@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -14,11 +15,11 @@ public class ChatroomController {
     private final ChatroomService chatroomService;
 
     @GetMapping("/chatrooms/titles")
-    public Response<Map<Long, String>> getChatroomsBy(
+    public Response<Map<Long, String>> getChatrooms(
         @RequestParam("loginId") String loginId,
         @RequestParam("categoryType") String categoryType) {
 
-        return Response.success("채팅방 목록을 불러왔습니다.", chatroomService.getChatroomsBy(loginId, categoryType));
+        return Response.success("채팅방 목록을 불러왔습니다.", chatroomService.getChatrooms(loginId, categoryType));
     }
 
     // 채팅방 사용자 저장기능

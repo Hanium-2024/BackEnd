@@ -30,7 +30,7 @@ public class Chatroom {
         return saved;
     }
 
-    public static Map<Long, String> getChatrooms(List<Chatroom> chatroomList) {
+    public static Map<Long, String> getSavedChatrooms(List<Chatroom> chatroomList) {
         return chatroomList.stream()
                 .filter(Chatroom::isSaved)
                 .collect(Collectors.toMap(Chatroom::getChatroomId, Chatroom::getTitle));

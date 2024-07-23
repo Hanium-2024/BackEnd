@@ -1,5 +1,6 @@
 package com.hanieum.llmproject.controller;
 
+import com.hanieum.llmproject.dto.Response;
 import com.hanieum.llmproject.dto.chat.QuestionDto;
 import com.hanieum.llmproject.service.ChatService;
 import lombok.RequiredArgsConstructor;
@@ -9,16 +10,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/main")
 public class ChatController {
 
     private final ChatService chatService;
 
     // gpt응답기능
-    @PostMapping(value = "/ask/{chatroomId}", produces = "text/event-stream")
+    @PostMapping(value = "/main/ask/{chatroomId}", produces = "text/event-stream")
     public ResponseEntity<SseEmitter> ask(Authentication authentication,
                                           @RequestParam("categoryType") String categoryType,
                                           @PathVariable("chatroomId") Long chatroomId,
@@ -36,4 +38,8 @@ public class ChatController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping("/chats/{chatroomId}")
+    public Response<List<String>> getChats(@PathVariable("chatroomId") Long chatroomId) {
+        return Response.success("채팅을 불러왔습니다.", chatService.getChats(chatroomId));
+    }
 }

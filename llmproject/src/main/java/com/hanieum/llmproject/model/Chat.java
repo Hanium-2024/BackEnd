@@ -2,6 +2,7 @@ package com.hanieum.llmproject.model;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -40,15 +41,16 @@ public class Chat {
         this.contentType = isUserMessage ? ContentType.Prompt : ContentType.Text_output;
         this.content = message;
         this.outputTime = LocalDateTime.now();
+    }
 
+    public LocalDateTime getOutputTime() { return outputTime; }
+
+    public String getMessage() {
+        return this.content;
     }
 
     public boolean isUserMessage() {
         return this.contentType == ContentType.Prompt;
-    }
-
-    public String getMessage() {
-        return this.content;
     }
 
 }
