@@ -34,7 +34,6 @@ class ChatServiceTest {
         // given
         chatroom = mock(Chatroom.class);
 
-
         Chat chat1 = new Chat(chatroom, true, "질문 1");
         setField(chat1, "outputTime", LocalDateTime.of(2024, 7, 20, 10, 15));
 
