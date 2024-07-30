@@ -1,6 +1,7 @@
 package com.hanieum.llmproject.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hanieum.llmproject.config.cors.CorsConfig;
 import com.hanieum.llmproject.config.jwt.ExceptionHandlerFilter;
 import com.hanieum.llmproject.config.jwt.JwtFilter;
 import com.hanieum.llmproject.config.jwt.JwtUtil;
@@ -24,12 +25,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
-    private final ObjectMapper objectMapper;
+    private final CorsConfig corsConfig;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    };
+    }
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -42,6 +43,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfig.corsConfiguration()))
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .httpBasic(HttpBasicConfigurer::disable)
