@@ -127,6 +127,7 @@ public class ChatService {
                             emitter.send("chat_room_id: "+chatRoomId );
                             saveChat(chatRoomId,true, question);      // 사용자질문저장
                             saveChat(chatRoomId,false,sb.toString()); // gpt답변저장
+                            //emitter.send("{\"content\": \"" + sb.toString() + "\"}"); // JSON 형식으로 전송
                             emitter.complete();
 
                             // 결과 확인용
@@ -138,7 +139,9 @@ public class ChatService {
 
                             if (delta!=null && delta.getContent()!=null){
                                 sb.append(delta.getContent());      // 버퍼에 sse답변모으기
-                                emitter.send(delta.getContent());   // 프론트로 text만 출력시킴
+                                //emitter.send(delta.getContent());   // 프론트로 text만 출력시킴
+                                emitter.send("{\"content\": \"" + delta.getContent() + "\"}"); // json형식으로 전송
+                                System.out.println("Sending to frontend: " + delta.getContent());
                             }
                         }
                     } catch (IOException e) {
