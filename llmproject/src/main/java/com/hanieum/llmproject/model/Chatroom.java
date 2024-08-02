@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Chatroom {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     @Column(name = "CHATROOM_ID")
     private Long id;
 
