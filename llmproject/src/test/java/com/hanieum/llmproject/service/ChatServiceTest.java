@@ -34,16 +34,16 @@ class ChatServiceTest {
         // given
         chatroom = mock(Chatroom.class);
 
-        Chat chat1 = new Chat(chatroom, true, "질문 1");
+        Chat chat1 = new Chat(chatroom, true, false, "질문 1");
         setField(chat1, "outputTime", LocalDateTime.of(2024, 7, 20, 10, 15));
 
-        Chat chat2 = new Chat(chatroom, false, "답변 1");
+        Chat chat2 = new Chat(chatroom, false, false, "답변 1");
         setField(chat2, "outputTime", LocalDateTime.of(2024, 7, 20, 10, 30));
 
-        Chat chat3 = new Chat(chatroom, true, "질문 2");
+        Chat chat3 = new Chat(chatroom, true, false, "질문 2");
         setField(chat3, "outputTime", LocalDateTime.of(2024, 7, 21, 5, 10));
 
-        Chat chat4 = new Chat(chatroom, false, "답변 2");
+        Chat chat4 = new Chat(chatroom, false, false, "답변 2");
         setField(chat4, "outputTime", LocalDateTime.of(2024, 7, 21, 5, 20));
 
         when(chatroomService.findChatroom(1L)).thenReturn(chatroom);
