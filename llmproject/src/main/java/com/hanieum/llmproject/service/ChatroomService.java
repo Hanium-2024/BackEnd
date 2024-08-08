@@ -60,15 +60,15 @@ public class ChatroomService {
         User user = loadUser(userId);
 
         // 채팅방 (사용자, 카테고리, 채팅방아이디 불일치 -> 카테고리항목에 새로운 채팅방생성)
-        Chatroom chatroom = chatroomRepository.findByUserAndCategoryAndId(user,category,chatroomId)
-                .orElseGet(()->createChatRoom(userId, category, title));
+        Chatroom chatroom = chatroomRepository.findByUserAndId(user,chatroomId)
+                .orElseGet(()->createChatRoom(userId,chatroomId, category, title));
         return chatroom.getChatroomId();
     }
 
     // 채팅방 없을시 생성
-    private Chatroom createChatRoom(String userId, Category categoryType, String title) {
+    private Chatroom createChatRoom(String userId, Long chatroomId, Category categoryType, String title) {
         User user = loadUser(userId);
-        Chatroom chatroom = new Chatroom(user, categoryType, title);
+        Chatroom chatroom = new Chatroom(user, chatroomId, categoryType, title);
         System.out.println("채팅방을 생성합니다.");
         chatroomRepository.save(chatroom);
         return chatroom;
