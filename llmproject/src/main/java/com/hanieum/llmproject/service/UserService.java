@@ -12,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -101,6 +102,16 @@ public class UserService {
     public User findUserByLoginId(String loginId) {
         return userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    /**
+     * ThreadLocal에 저장된 SecurityContext에서 사용자 정보를 가져옴
+     *
+     * @return 사용자의 로그인 Id
+     */
+    public String getLoginId() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 }
 

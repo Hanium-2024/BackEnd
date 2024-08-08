@@ -38,14 +38,16 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
     private final ChatroomService chatroomService;
+    private final DallEService dallEService;
+    private final UserService userService;
 
     // 채팅내역 자동저장기능 (사용자답변, gpt답변분리)
-    private void saveChat(Long chatroomId, boolean isUserMessage, String message){
+    private void saveChat(Long chatroomId, boolean isUserMessage, boolean isImage, String message){
 
         Chatroom chatroom = chatroomService.findChatroom(chatroomId);
         if (chatroom == null){ throw new IllegalArgumentException("채팅방을 찾을수없음.");}
 
-        Chat chat = new Chat(chatroom, isUserMessage, message);
+        Chat chat = new Chat(chatroom, isUserMessage, isImage, message);
 
         chatRepository.save(chat);
     }
@@ -125,8 +127,8 @@ public class ChatService {
                         if (line.equals("[DONE]")) {    // 응답 종료시
                             // 저장
                             emitter.send("chat_room_id: "+chatRoomId );
-                            saveChat(chatRoomId,true, question);      // 사용자질문저장
-                            saveChat(chatRoomId,false,sb.toString()); // gpt답변저장
+                            saveChat(chatRoomId, true, false, question);      // 사용자질문저장
+                            saveChat(chatRoomId, false, false, sb.toString()); // gpt답변저장
                             emitter.complete();
 
                             // 결과 확인용
@@ -150,5 +152,19 @@ public class ChatService {
                 .subscribe();
 
         return emitter;
+    }
+
+    public String askImage(Long chatroomId, String question) {
+        String image = dallEService.generateImage(question);
+
+        var title = createTitle(question);
+        var userId = userService.getLoginId();
+
+        var returnedChatroomId = chatroomService.findOrCreateChatroom(userId, chatroomId, "DESIGN", title);
+
+        saveChat(returnedChatroomId, true, false, question);
+        saveChat(returnedChatroomId, false, true, image);
+
+        return image;
     }
 }
