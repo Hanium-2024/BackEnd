@@ -38,6 +38,12 @@ public class ChatController {
         return ResponseEntity.ok().body(response);
     }
 
+    @PostMapping("/main/design/{chatroomId}")
+    public Response<String> askImage(@RequestBody String question,
+                                     @PathVariable("chatroomId") Long chatroomId) {
+        return Response.success("설계도 이미지 생성 완료", chatService.askImage(chatroomId, question));
+    }
+
     @GetMapping("/chats/{chatroomId}")
     public Response<List<String>> getChats(@PathVariable("chatroomId") Long chatroomId) {
         return Response.success("채팅을 불러왔습니다.", chatService.getChats(chatroomId));
