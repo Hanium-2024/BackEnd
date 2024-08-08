@@ -140,7 +140,9 @@ public class ChatService {
 
                             if (delta!=null && delta.getContent()!=null){
                                 sb.append(delta.getContent());      // 버퍼에 sse답변모으기
-                                emitter.send(delta.getContent());   // 프론트로 text만 출력시킴
+                                //emitter.send(delta.getContent());   // 프론트로 text만 출력시킴
+                                emitter.send("{\"content\": \"" + delta.getContent() + "\"}"); // json형식으로 전송
+                                System.out.println("Sending to frontend: " + delta.getContent());
                             }
                         }
                     } catch (IOException e) {
