@@ -45,8 +45,9 @@ public class Chatroom {
     }
 
     // 채팅저장관련
-    public Chatroom(User user, Category category, String title) {
+    public Chatroom(User user, Long chatroomId, Category category, String title) {
         this.user = user;
+        this.id = chatroomId;
         this.category = category;
         this.title = title;
     }
