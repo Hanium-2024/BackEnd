@@ -32,6 +32,9 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@dbbdc275be76ac10734476cc723d82dfe7ec6eda # v3.4.2
 
+    - name: Set Permission Gradle
+      run: chmod +x ./llmproject/gradlew clean build
+
     - name: Build with Gradle
       run: ./llmproject/gradlew clean build
 
