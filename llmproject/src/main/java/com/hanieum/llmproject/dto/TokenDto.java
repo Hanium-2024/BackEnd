@@ -8,15 +8,15 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class TokenDto {
-    private String grantType;
-    private String accessToken;
-    private String refreshToken;
+	private String grantType;
+	private String accessToken;
+	private String refreshToken;
 
-    public static TokenDto buildToken(String accessToken, String refreshToken) {
-        return TokenDto.builder()
-                .grantType("Bearer ")
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
-    }
+	public static TokenDto buildToken(String accessToken, String refreshToken) {
+		return TokenDto.builder()
+			.grantType("Bearer ")
+			.accessToken(accessToken)
+			.refreshToken(refreshToken)
+			.build();
+	}
 }

@@ -1,26 +1,26 @@
 package com.hanieum.llmproject.model;
 
+import java.util.Arrays;
+
 import com.hanieum.llmproject.exception.ErrorCode;
 import com.hanieum.llmproject.exception.errortype.CustomException;
 
-import java.util.Arrays;
-
 public enum Category {
-    PLAN,
-    DESIGN,
-    CODE,
-    TEST,
-    DEPLOY;
+	PLAN,
+	DESIGN,
+	CODE,
+	TEST,
+	DEPLOY;
 
-    public static boolean isValid(String value) {
-        return Arrays.stream(Category.values())
-                .anyMatch(category -> category.name().equalsIgnoreCase(value));
-    }
+	public static boolean isValid(String value) {
+		return Arrays.stream(Category.values())
+			.anyMatch(category -> category.name().equalsIgnoreCase(value));
+	}
 
-    public static Category fromString(String value) {
-        return Arrays.stream(Category.values())
-                .filter(category -> category.name().equalsIgnoreCase(value))
-                .findFirst()
-                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_VALID));
-    }
+	public static Category fromString(String value) {
+		return Arrays.stream(Category.values())
+			.filter(category -> category.name().equalsIgnoreCase(value))
+			.findFirst()
+			.orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_VALID));
+	}
 }

@@ -1,6 +1,7 @@
 package com.hanieum.llmproject.exception.errortype;
 
 import com.hanieum.llmproject.exception.ErrorCode;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,5 +13,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class CustomException extends RuntimeException {
-    private final ErrorCode errorCode;
+	private final ErrorCode errorCode;
 }

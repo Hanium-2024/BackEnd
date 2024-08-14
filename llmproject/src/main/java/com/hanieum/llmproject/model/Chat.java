@@ -1,64 +1,78 @@
 package com.hanieum.llmproject.model;
 
-import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Chat {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CHAT_ID")
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "CHAT_ID")
+	private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "CHATROOM_ID")
-    private Chatroom chatroom;
+	@ManyToOne
+	@JoinColumn(name = "CHATROOM_ID")
+	private Chatroom chatroom;
 
-    @Enumerated(EnumType.STRING)
-    private ContentType contentType;
-    // Enum 타입 정의
-    private enum ContentType {
-        Prompt,
-        Text_output,
-        Image_output;
-    }
+	@Enumerated(EnumType.STRING)
+	private ContentType contentType;
+	@Lob
+	@Column(columnDefinition = "TEXT")
+	private String content;
+	private LocalDateTime outputTime;
 
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String content;
+	// 메소드
+	public Chat(Chatroom chatroomId, boolean isUserMessage, boolean isImage, String message) {
+		this.chatroom = chatroomId;
 
-    private LocalDateTime outputTime;
+		// TODO subString으로 IMAGE_output식별로 분리해서 저장
+		this.contentType = determineContentType(isUserMessage, isImage);
+		this.content = message;
+		this.outputTime = LocalDateTime.now();
+	}
 
-    // 메소드
-    public Chat(Chatroom chatroomId, boolean isUserMessage, boolean isImage, String message) {
-        this.chatroom = chatroomId;
+	private ContentType determineContentType(boolean isUserMessage, boolean isImage) {
+		if (isUserMessage) {
+			return ContentType.Prompt;
+		}
 
-        // TODO subString으로 IMAGE_output식별로 분리해서 저장
-        this.contentType = determineContentType(isUserMessage, isImage);
-        this.content = message;
-        this.outputTime = LocalDateTime.now();
-    }
+		if (isImage) {
+			return ContentType.Image_output;
+		}
 
-    private ContentType determineContentType(boolean isUserMessage, boolean isImage) {
-        if (isUserMessage) { return ContentType.Prompt; }
+		return ContentType.Text_output;
+	}
 
-        if (isImage) { return ContentType.Image_output; }
+	public LocalDateTime getOutputTime() {
+		return outputTime;
+	}
 
-        return ContentType.Text_output;
-    }
+	public String getMessage() {
+		return this.content;
+	}
 
-    public LocalDateTime getOutputTime() { return outputTime; }
+	public boolean isUserMessage() {
+		return this.contentType == ContentType.Prompt;
+	}
 
-    public String getMessage() {
-        return this.content;
-    }
-
-    public boolean isUserMessage() {
-        return this.contentType == ContentType.Prompt;
-    }
+	// Enum 타입 정의
+	private enum ContentType {
+		Prompt,
+		Text_output,
+		Image_output;
+	}
 
 }

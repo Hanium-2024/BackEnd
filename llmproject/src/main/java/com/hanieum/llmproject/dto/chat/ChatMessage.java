@@ -8,6 +8,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class ChatMessage {
-    private String role;
-    private String content;
+	private String role;
+	private String content;
 }

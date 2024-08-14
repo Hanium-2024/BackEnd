@@ -8,6 +8,6 @@ import lombok.Getter;
  */
 @Getter
 public class TokenRequest {
-    private String loginId;
-    private String refreshToken;
+	private String loginId;
+	private String refreshToken;
 }

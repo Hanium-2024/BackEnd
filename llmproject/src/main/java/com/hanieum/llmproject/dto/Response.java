@@ -1,6 +1,7 @@
 package com.hanieum.llmproject.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,19 +9,19 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class Response<T> {
-    private boolean success;
-    private String message;
-    private T data;
+	private boolean success;
+	private String message;
+	private T data;
 
-    public Response(boolean success, String message) {
-        this(success, message,null);
-    }
+	public Response(boolean success, String message) {
+		this(success, message, null);
+	}
 
-    public static <T> Response<T> success(String message, T data) {
-        return new Response<>(true, message, data);
-    }
+	public static <T> Response<T> success(String message, T data) {
+		return new Response<>(true, message, data);
+	}
 
-    public static <T> Response<T> fail(String message) {
-        return new Response<>(false, message);
-    }
+	public static <T> Response<T> fail(String message) {
+		return new Response<>(false, message);
+	}
 }

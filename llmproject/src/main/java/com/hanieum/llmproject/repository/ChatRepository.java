@@ -1,11 +1,12 @@
 package com.hanieum.llmproject.repository;
 
-import com.hanieum.llmproject.model.Chat;
-import com.hanieum.llmproject.model.Chatroom;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.hanieum.llmproject.model.Chat;
+import com.hanieum.llmproject.model.Chatroom;
+
 public interface ChatRepository extends JpaRepository<Chat, Long> {
-    List<Chat> findAllByChatroom(Chatroom chatroom);
+	List<Chat> findAllByChatroom(Chatroom chatroom);
 }
