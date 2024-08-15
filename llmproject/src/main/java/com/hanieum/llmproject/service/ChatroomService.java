@@ -37,7 +37,7 @@ public class ChatroomService {
 	}
 
 	// CategoryService를 따로 만들어 책임 분리 고려해야 함.
-	private Category loadCategory(String categoryString) {
+	public Category loadCategory(String categoryString) {
 		validateCategory(categoryString);
 
 		return Category.fromString(categoryString);
