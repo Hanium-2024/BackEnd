@@ -100,7 +100,7 @@ public class ChatService {
 			maxTokens(ChatGptConfig.MAX_TOKEN).
 			temperature(ChatGptConfig.TEMPERATURE).
 			stream(true).
-			messages(applyPromptEngineering(compositeMessage(chatRoomId, question), categoryType)).
+			messages(gptService.applyPromptEngineering(compositeMessage(chatRoomId, question), categoryType)).
 			build();
 
 		// 기타셋팅

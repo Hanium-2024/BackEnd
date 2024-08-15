@@ -40,7 +40,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Getter
 @Slf4j
 @Service
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class GPTService {
 	@Value("#{'${openai.key}'.trim()}")
 	private String token;
