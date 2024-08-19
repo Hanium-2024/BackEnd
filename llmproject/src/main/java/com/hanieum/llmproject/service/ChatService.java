@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import com.hanieum.llmproject.exception.ErrorCode;
+import com.hanieum.llmproject.exception.errortype.CustomException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -34,7 +36,7 @@ public class ChatService {
 
 		Chatroom chatroom = chatroomService.findChatroom(chatroomId);
 		if (chatroom == null) {
-			throw new IllegalArgumentException("채팅방을 찾을수없음.");
+			throw new CustomException(ErrorCode.CHATROOM_NOT_FOUND);
 		}
 
 		Chat chat = new Chat(chatroom, isUserMessage, isImage, message);
@@ -50,7 +52,7 @@ public class ChatService {
 		// 이전메세지 가져오기
 		Chatroom chatroom = chatroomService.findChatroom(chatroomId);
 		if (chatroom == null) {
-			throw new NullPointerException("채팅방을 찾을수없음.");
+			throw new CustomException(ErrorCode.CHATROOM_NOT_FOUND);
 		}
 
 		List<Chat> chatHistory = chatRepository.findAllByChatroom(chatroom);

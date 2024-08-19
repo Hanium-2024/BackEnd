@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.hanieum.llmproject.dto.chat.ChatMessage;
 import com.hanieum.llmproject.dto.chat.ChatRequestDto;
+import com.hanieum.llmproject.exception.ErrorCode;
+import com.hanieum.llmproject.exception.errortype.CustomException;
 import com.hanieum.llmproject.model.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,7 +95,7 @@ public class GPTService {
 
 			return content;
 		} catch (IOException e) {
-			throw new RuntimeException("Error parsing GPT response", e);
+			throw new CustomException(ErrorCode.JSON_PARSE_ERROR);
 		}
 	}
 }
