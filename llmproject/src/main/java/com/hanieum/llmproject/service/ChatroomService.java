@@ -53,7 +53,7 @@ public class ChatroomService {
 	// 채팅방 찾기
 	public Chatroom findChatroom(Long chatroomId) {
 		return chatroomRepository.findById(chatroomId)
-			.orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을수없습니다."));
+			.orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 	}
 
 	// 찾고 없으면 새채팅방 자동생성(채팅방없을시createChatroom호출)
@@ -82,7 +82,7 @@ public class ChatroomService {
 		// 채팅방 찾기
 		User user = loadUser(loginId);
 		Chatroom chatroom = chatroomRepository.findByUserAndId(user, chatroomId)
-			.orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을수없음"));
+			.orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 
 		// 저장상태 업데이트
 		if (!chatroom.isSaved()) {
@@ -95,7 +95,7 @@ public class ChatroomService {
 		// 채팅방 찾기
 		User user = loadUser(loginId);
 		Chatroom chatroom = chatroomRepository.findByUserAndId(user, chatroomId)
-			.orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을수없음"));
+			.orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 
 		// 저장상태 업데이트
 		if (chatroom.isSaved()) {
