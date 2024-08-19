@@ -1,38 +1,19 @@
 package com.hanieum.llmproject.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.hanieum.llmproject.dto.chat.ChatMessage;
 import com.hanieum.llmproject.dto.chat.ChatRequestDto;
-import com.hanieum.llmproject.dto.chat.ChatStreamResponseDto;
 import com.hanieum.llmproject.model.Category;
-import com.hanieum.llmproject.model.Chat;
-import com.hanieum.llmproject.model.Chatroom;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -56,11 +37,17 @@ public class GPTService {
 		messages.add(0,new ChatMessage("system", "너는 llm 코딩 자동화 어시스턴트 도구야. 개발자에게 친절하게 도움을 줘야해."));
 
 		if (category == Category.PLAN) { // 계획단계에 맞는 적합한 답변을 지시
-			// 개별 시스템 메시지 추가
-			messages.add(1, new ChatMessage("system", "필요한기능명세서 목록을 출력해주는 역할을 해야해. 사용자가 주제나 구현하고싶은 기능에대해 얘기하면 그 기능을 구현하기위해 필요한 기능들을 상세하게 목록으로 만들어서 출력해줘."));
-			messages.add(2, new ChatMessage("system", "한눈에 보기쉽게 정갈하게 정렬하거나 표로 표시해야해."));
-			ChatMessage userMessage = messages.get(messages.size() - 1);
-			userMessage.setContent("다음에 작성된 내용에 대해 기능명세서를 작성해줘 : " + userMessage.getContent());
+			// 공통프롬프트
+			messages.add(1, new ChatMessage("system", "너는 소프트웨어 개발의 계획단계에 필요한 기능명세서를 출력해주는 모델이야."));
+			messages.add(2, new ChatMessage("system", "소프트웨어 개발의 계획단계에 필요한 기능명세서 요청과 관련없는 질문에 대해서는 사용자에게 질문을 재입력하도록 요구해."));
+			messages.add(3, new ChatMessage("system", "프로그램을 개발하기위해 필요한 기능명세서를 출력해주는거니까 표형태로 가시성있게 답변을 해줘야해."));
+			messages.add(4, new ChatMessage("system", "요청받은것에 대해 최대한 상세하게 많은 기능을 명세해줘야해."));
+
+			// 부가프롬프트
+			messages.add(5, new ChatMessage("system", "기능 명세서를 작성하기에 부족한 정보를 제시한다면 너가 스스로 질문을 되물어서 자세한 정보를 받아내야해."));
+
+			//ChatMessage userMessage = messages.get(messages.size() - 1);
+			//userMessage.setContent("다음에 작성된 내용에 대해 기능명세서를 작성해줘 : " + userMessage.getContent());
 
 		} else if (category == Category.CODE) { // 코딩단계에 맞는 적합한 답변을 지시
 			// 개별 시스템 메시지 추가
@@ -83,35 +70,30 @@ public class GPTService {
 		return messages;
 	}
 
-	public void gptRequest(ChatRequestDto chatRequestDto, Consumer<String> onDate, Runnable onComplete) {
+	public String gptRequest(ChatRequestDto chatRequestDto) {
 
 		WebClient client = WebClient.create("https://api.openai.com/v1");
 
 		// gpt요청
-		client.post().uri("/chat/completions")
+		String response = client.post()
+				.uri("/chat/completions")
 				.header("Content-Type", "application/json")
 				.header("Authorization", "Bearer " + token)
 				.body(BodyInserters.fromValue(chatRequestDto))
-				.exchangeToFlux(response -> response.bodyToFlux(String.class))
-				.doOnNext(line -> {
-					try {
-						if (line.equals("[DONE]")) {    // 응답 종료시
-							onComplete.run();
-						} else {    // 응답 진행중
-							ObjectMapper mapper = new ObjectMapper().configure(
-									DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-							ChatStreamResponseDto streamDto = mapper.readValue(line, ChatStreamResponseDto.class);
-							ChatStreamResponseDto.Choice.Delta delta = streamDto.getChoices().get(0).getDelta();
+				.retrieve()
+				.bodyToMono(String.class)
+				.block();
 
-							if (delta != null && delta.getContent() != null) {
-								onDate.accept(delta.getContent());
-							}
-						}
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				})
-				.subscribe();
+		// 응답에서 content 부분 추출
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode root = mapper.readTree(response);
+			JsonNode choicesNode = root.path("choices").get(0);
+			String content = choicesNode.path("message").path("content").asText();
 
+			return content;
+		} catch (IOException e) {
+			throw new RuntimeException("Error parsing GPT response", e);
+		}
 	}
 }

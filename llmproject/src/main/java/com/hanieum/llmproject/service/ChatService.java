@@ -86,7 +86,7 @@ public class ChatService {
 	}
 
 	// sse응답기능
-	public SseEmitter ask(String loginId, Long chatroomId, String categoryType, String question) {
+	public String ask(String loginId, Long chatroomId, String categoryType, String question) {
 
 		// 질문 기반 채팅방제목생성
 		String title = createTitle(question);
@@ -99,29 +99,15 @@ public class ChatService {
 			model(ChatGptConfig.CHAT_MODEL).
 			maxTokens(ChatGptConfig.MAX_TOKEN).
 			temperature(ChatGptConfig.TEMPERATURE).
-			stream(true).
 			messages(gptService.applyPromptEngineering(compositeMessage(chatRoomId, question), categoryType)).
 			build();
 
-		// 기타셋팅
-		StringBuffer sb = new StringBuffer(); // 텍스트한번에 저장할 버퍼
-		SseEmitter emitter = new SseEmitter((long)(5 * 60 * 1000)); // SseEmitter(기본시간)
+		String response = gptService.gptRequest(chatRequestDto);
 
-		gptService.gptRequest(chatRequestDto, content -> {
-			try {
-				sb.append(content);
-				emitter.send("{\"content\": \"" + content + "\"}");
-				//System.out.println("content = " + content);
-			} catch (IOException e) {
-				emitter.completeWithError(e);
-			}
-		}, () -> {
-				saveChat(chatroomId, true, false, question);
-				saveChat(chatroomId, false, false, sb.toString());
-			System.out.println(sb.toString());
-				emitter.complete();
-		});
-		return emitter;
+		saveChat(chatroomId, true, false, question);
+		saveChat(chatroomId, false, false, response);
+		System.out.println(response);
+		return response;
 	}
 
 	public String askImage(Long chatroomId, String question) {
