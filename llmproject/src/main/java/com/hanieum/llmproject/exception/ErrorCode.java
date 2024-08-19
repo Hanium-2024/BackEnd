@@ -16,7 +16,9 @@ public enum ErrorCode {
 	EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다. 로그인을 다시 해주세요."),
 	TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증에 필요한 JWT가 없습니다"),
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
-	CATEGORY_NOT_VALID(HttpStatus.NOT_FOUND, "옳지 않은 카테고리 종류입니다.");
+	CATEGORY_NOT_VALID(HttpStatus.NOT_FOUND, "옳지 않은 카테고리 종류입니다."),
+	CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방 정보를 찾을수없습니다."),
+	JSON_PARSE_ERROR(HttpStatus.BAD_REQUEST, "GPT응답을 파싱하는 중 오류가 발생했습니다.");
 
 	private final HttpStatus status;
 	private final String message;

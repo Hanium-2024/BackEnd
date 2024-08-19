@@ -14,7 +14,7 @@ public class ChatRequestDto {
 	@JsonProperty("max_tokens")
 	Integer maxTokens;
 	Double temperature;
-	boolean stream;
+	//boolean stream;
 	List<ChatMessage> messages;
 
 }

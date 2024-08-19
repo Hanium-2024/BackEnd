@@ -27,8 +27,8 @@ public class ChatController {
 	private final ChatService chatService;
 
 	// gpt응답기능
-	@PostMapping(value = "/main/ask/{chatroomId}", produces = "text/event-stream")
-	public ResponseEntity<SseEmitter> ask(Authentication authentication,
+	@PostMapping(value = "/main/ask/{chatroomId}")
+	public Response<String> ask(Authentication authentication,
 		@RequestParam("categoryType") String categoryType,
 		@PathVariable("chatroomId") Long chatroomId,
 		@RequestBody QuestionDto request) {
@@ -41,8 +41,7 @@ public class ChatController {
 		System.out.println("요청 = " + request.getQuestion());
 
 		// 서비스 실행
-		SseEmitter response = chatService.ask(loginId, chatroomId, categoryType, request.getQuestion());
-		return ResponseEntity.ok().body(response);
+		return Response.success("질문성공", chatService.ask(loginId, chatroomId, categoryType, request.getQuestion()));
 	}
 
 	@PostMapping("/main/design/{chatroomId}")
