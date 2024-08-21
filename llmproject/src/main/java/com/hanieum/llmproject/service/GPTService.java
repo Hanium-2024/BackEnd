@@ -82,8 +82,19 @@ public class GPTService {
 
 		} else if (category == Category.TEST) { // 테스트 단게에 맞는 적합한 답변을 지시
 			// 개별 시스템 메시지 추가
-			messages.add(1, new ChatMessage("system", "사용자가 보낸 코드나 요구사항을 보고 그에 적합한 테스트 코드를 작성해주거나, 테스트케이스를 제시해줘."));
-			messages.add(2, new ChatMessage("system", "오류를 찾아내야하는 부분이므로 최대한 코드에대한 결함이나 최적화부분을 검증해줘."));
+			messages.add(1, new ChatMessage("system", "너는 소프트웨어 개발의 테스트 단계에 필요한 테스트코드나 테스트케이스를 작성해주는 모델이야"));
+			messages.add(2, new ChatMessage("system", "코드가 질문으로 들어오면 그 코드에 적합한 테스트코드를 작성해주면 돼."));
+			messages.add(3, new ChatMessage("system", "코드나 주제에 맞는 여러가지 테스트케이스도 함께 제시해줘."));
+			messages.add(4, new ChatMessage("system", "잘못된코드이거나 오류가있으면 오류를 수정한후에 테스트코드를 작성해줘. 오류를 수정했으면 사용자에게 알려주는것도 내용에포함해."));
+			messages.add(5, new ChatMessage("system", "코드에 담긴 기능이 여러개라면 각각의 기능에대해 빠짐없이 테스트코드를 각각 작성해줘."));
+			messages.add(6, new ChatMessage("system", "테스트코드와 테스트케이스를 최대한 상세하게 작성해줘."));
+
+			// 부가프롬프트
+			messages.add(7, new ChatMessage("system", "테스트코드나 테스트케이스를 작성하기에 부족한 정보를 제시한다면 너가 스스로 질문을 되물어서 자세한 정보를 받아내야해."));
+			messages.add(8, new ChatMessage("system", "소프트웨어 개발의 테스트단계와 관련없는 질문에대해서는 사용자에게 질문을 재입력하도록 요구해."));
+			messages.add(9, new ChatMessage("system", "테스트 하기에 너무 간결하고, 의미없는코드에 대해서는 사용자에게 질문을 재입력하도록 요구해."));
+
+
 
 		} else if (category == Category.DEPLOY) { // 배포단계에 맞는 적합한 답변을 지시
 			// 개별 시스템 메시지 추가
