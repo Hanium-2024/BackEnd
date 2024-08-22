@@ -1,14 +1,18 @@
 package com.hanieum.llmproject.service;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 
 import com.hanieum.llmproject.exception.ErrorCode;
 import com.hanieum.llmproject.exception.errortype.CustomException;
+import com.hanieum.llmproject.model.Category;
+import net.sourceforge.plantuml.SourceStringReader;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.hanieum.llmproject.config.aiconfig.ChatGptConfig;
 import com.hanieum.llmproject.dto.chat.ChatMessage;
@@ -88,7 +92,7 @@ public class ChatService {
 	}
 
 	// sse응답기능
-	public String ask(String loginId, Long chatroomId, String categoryType, String question) {
+	public String ask(String loginId, Long chatroomId, String categoryType, String question) throws IOException {
 
 		// 질문 기반 채팅방제목생성
 		String title = createTitle(question);
@@ -104,11 +108,26 @@ public class ChatService {
 			messages(gptService.applyPromptEngineering(compositeMessage(chatRoomId, question), categoryType)).
 			build();
 
+		// gpt 응답
 		String response = gptService.gptRequest(chatRequestDto);
 
-		saveChat(chatroomId, true, false, question);
-		saveChat(chatroomId, false, false, response);
-		System.out.println(response);
+		// 디자인일때 -> plant uml 함수호출, 나머지 -> 일반 저장
+		Category category = chatroomService.loadCategory(categoryType);
+		if (category== Category.DESIGN) {
+			saveChat(chatroomId, true, false, question);  // 질문저장
+
+			// 이미지 답변 저장 (Base64로 인코딩된 JSON 문자열을 저장)
+			// TODO 이미지 처리 + 텍스트 포함일때 저장방식이 애매함.
+			String base64ImageJson = plantUml(response);
+			saveChat(chatroomId, true, true, base64ImageJson);
+			System.out.println("설계단계: \n" + response);
+
+
+		} else {
+			saveChat(chatroomId, true, false, question);  // 질문저장
+			saveChat(chatroomId, false, false, response); // 답변저장
+			System.out.println("다른단계: \n" + response);
+		}
 		return response;
 	}
 
@@ -124,5 +143,27 @@ public class ChatService {
 		saveChat(returnedChatroomId, false, true, image);
 
 		return image;
+	}
+
+	private String plantUml(String request) throws IOException {
+		// PlantUML 다이어그램 요청
+		String umlSource = request;
+
+		// PlantUML 다이어그램을 byte로 생성
+		SourceStringReader reader = new SourceStringReader(umlSource);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		//reader.outputImage(baos).getDescription();
+
+		// 오류검증
+		if (reader.outputImage(baos) == null) {
+			throw new IOException("다이어그램 생성에 실패했습니다.");
+		}
+
+		byte[] diagramBlob = baos.toByteArray();
+		String base64Image = Base64.getEncoder().encodeToString(diagramBlob);
+
+		// JSON 형태로 반환
+		String jsonResponse = "{\"b64_json\":\"" + base64Image + "\"}";
+		return jsonResponse;
 	}
 }

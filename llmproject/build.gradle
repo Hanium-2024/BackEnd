@@ -33,6 +33,9 @@ dependencies {
 	// sse 관련
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+	// plant uml 관련
+	implementation 'net.sourceforge.plantuml:plantuml:1.2024.1'
+
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 	runtimeOnly 'com.mysql:mysql-connector-j'
