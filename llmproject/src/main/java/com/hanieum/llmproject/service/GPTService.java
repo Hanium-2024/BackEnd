@@ -72,11 +72,20 @@ public class GPTService {
 		} else if (category == Category.DESIGN) {
 			// 공통 프롬프트 메시지
 			messages.add(1, new ChatMessage("system", "너는 사용자의 요구사항을 erd 다이어그램으로 바꿔주는 소프트웨어 개발의 설계단계의 모델이야."));
-			messages.add(2, new ChatMessage("system", "사용자가 코드를 보내거나 어떠한주제에대한 설명등을 제시하면, 그걸 Plant Uml문법으로 바꿔서 출력해줘."));
-			messages.add(3, new ChatMessage("system", "꼭 Plant Uml문법으로만 답변을 주어야하고, 정보가 부족하면 너가 임의로 생각해서 코드를 작성해. 절대 text는출력되면안돼."));
-			messages.add(4, new ChatMessage("system", "소프트웨어 개발의 설계도작성, ERD다이어그램 작성에 관한 정보가 아니면 사용자에게 재입력을 요구해."));
-			messages.add(5, new ChatMessage("system", "대략적인 정보가 제시되면 너가 예시로 기능몇개를 추가해서 만들어."));
-			messages.add(6, new ChatMessage("system", "반드시 시퀀스다이어그램, 활동다이어그램만 제시해주도록 해."));
+			messages.add(2, new ChatMessage("system", "시퀀스 다이어그램이나 활동다이어그램만 그려줘. plant uml에서 dot렌더링을 하는 코드는 추가하지마."));
+			messages.add(3, new ChatMessage("system", "사용자가 코드를 보내거나 어떠한주제에대한 설명등을 제시하면, 그걸 Plant Uml문법으로 바꿔서 출력해줘."));
+			messages.add(4, new ChatMessage("system", "출력 형식은 무조건" +
+																		 "A1: plant uml 코드\n" +
+																		 "\n" +
+																		 //"---\n" +
+																		 "\n" +
+																		 "A2: 글자설명\n" +
+																		 " 이렇게 보내줘"));
+			messages.add(5, new ChatMessage("system", "---\n 이 부분이 구분자이므로 꼭 넣어주어야해."));
+			messages.add(6, new ChatMessage("system", "코드생성을 하기위한 정보가 부족하다면 일단 A1에 부족한정보에서 임의로 plant uml 코드를 작성해줘. 그리고 A2에 답변으로 설명을 작성해. 그리고 더 자세한 답변을 얻기위한 형식을 맨아래 알려줘."));
+			messages.add(7, new ChatMessage("system", "소프트웨어 개발의 설계도작성, ERD다이어그램 작성에 관한 정보가 아니면 출력형식을 유지하되, A1에는 \"없음\"을 작성하고, A2에는 재입력을 위해 필요한 정보를 요구해."));
+
+
 			// 부가 프롬프트 메시지
 
 		} else if (category == Category.CODE) { // 코딩단계에 맞는 적합한 답변을 지시
@@ -113,7 +122,7 @@ public class GPTService {
 
 		}
 
-		System.out.println("messages = " + messages);
+		//System.out.println("messages = " + messages);
 		return messages;
 	}
 

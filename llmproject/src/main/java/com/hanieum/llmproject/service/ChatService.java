@@ -63,7 +63,7 @@ public class ChatService {
 
 		for (Chat chat : chatHistory) {
 			messages.add(new ChatMessage(chat.isUserMessage() ? "user" : "assistant", chat.getMessage()));
-			System.out.println("이전채팅 = " + chat.getMessage());
+			//System.out.println("이전채팅 = " + chat.getMessage());
 		}
 
 		// 새 메세지 추가
@@ -110,24 +110,42 @@ public class ChatService {
 
 		// gpt 응답
 		String response = gptService.gptRequest(chatRequestDto);
+		System.out.println("response = \n" + response);
 
-		// 디자인일때 -> plant uml 함수호출, 나머지 -> 일반 저장
+		// 디자인일때
 		Category category = chatroomService.loadCategory(categoryType);
 		if (category== Category.DESIGN) {
-			saveChat(chatroomId, true, false, question);  // 질문저장
 
-			// 이미지 답변 저장 (Base64로 인코딩된 JSON 문자열을 저장)
-			// TODO 이미지 처리 + 텍스트 포함일때 저장방식이 애매함.
-			String base64ImageJson = plantUml(response);
-			saveChat(chatroomId, true, true, base64ImageJson);
-			System.out.println("설계단계: \n" + response);
+			// 질문저장
+			saveChat(chatroomId, true, false, question);
 
+			// 응답형식 a1 , a2 분리
+			String[] answers = response.split("A2:");
+
+			// plant uml 코드부분 -> plant uml에 전달 -> 이미지 blob저장(Base64로 인코딩된 JSON 문자열을 저장)
+			if (answers[0].replace("A1:", "").trim().equals("없음")) {
+				System.out.println("Answer 1: 생성할 plant uml코드가 없습니다.");
+				System.out.println("Answer 2: " + answers[1].replace("A2:", "").trim());
+				saveChat(chatroomId, true, false, answers[1].replace("A2:", "").trim());
+				//System.out.println("설계단계 전체출력: \n" + response);
+			} else {
+				System.out.println("Answer 1: " + answers[0].replace("A1:", "").trim());
+				saveChat(chatroomId, true, false, answers[0].replace("A1:", "").trim()); // 확인용 임시코드저장
+				String base64ImageJson = plantUml(answers[0].replace("A1:", "").trim());
+				saveChat(chatroomId, true, true, base64ImageJson);
+				// 글자설명 부분 저장
+				System.out.println("Answer 2: " + answers[1].replace("A2:", "").trim());
+				saveChat(chatroomId, true, false, answers[1].replace("A2:", "").trim());
+				//System.out.println("설계단계 전체출력: \n" + response);
+			}
 
 		} else {
+
 			saveChat(chatroomId, true, false, question);  // 질문저장
 			saveChat(chatroomId, false, false, response); // 답변저장
-			System.out.println("다른단계: \n" + response);
+			//System.out.println("다른단계 전체출력: \n" + response);
 		}
+
 		return response;
 	}
 
