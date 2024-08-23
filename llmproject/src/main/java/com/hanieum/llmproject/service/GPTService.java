@@ -69,6 +69,25 @@ public class GPTService {
 			//ChatMessage userMessage = messages.get(messages.size() - 1);
 			//userMessage.setContent("다음에 작성된 내용에 대해 기능명세서를 작성해줘 : " + userMessage.getContent());
 
+		} else if (category == Category.DESIGN) {
+			// 공통 프롬프트 메시지
+			messages.add(1, new ChatMessage("system", "너는 사용자의 요구사항을 erd 다이어그램으로 바꿔주는 소프트웨어 개발의 설계단계의 모델이야."));
+			messages.add(2, new ChatMessage("system", "시퀀스 다이어그램이나 활동다이어그램만 그려줘. plant uml에서 dot렌더링을 하는 코드는 추가하지마."));
+			messages.add(3, new ChatMessage("system", "사용자가 코드를 보내거나 어떠한주제에대한 설명등을 제시하면, 그걸 Plant Uml문법으로 바꿔서 출력해줘."));
+			messages.add(4, new ChatMessage("system", "출력 형식은 무조건" +
+																		 "A1: plant uml 코드\n" +
+																		 "\n" +
+																		 //"---\n" +
+																		 "\n" +
+																		 "A2: 글자설명\n" +
+																		 " 이렇게 보내줘"));
+			messages.add(5, new ChatMessage("system", "---\n 이 부분이 구분자이므로 꼭 넣어주어야해."));
+			messages.add(6, new ChatMessage("system", "코드생성을 하기위한 정보가 부족하다면 일단 A1에 부족한정보에서 임의로 plant uml 코드를 작성해줘. 그리고 A2에 답변으로 설명을 작성해. 그리고 더 자세한 답변을 얻기위한 형식을 맨아래 알려줘."));
+			messages.add(7, new ChatMessage("system", "소프트웨어 개발의 설계도작성, ERD다이어그램 작성에 관한 정보가 아니면 출력형식을 유지하되, A1에는 \"없음\"을 작성하고, A2에는 재입력을 위해 필요한 정보를 요구해."));
+
+
+			// 부가 프롬프트 메시지
+
 		} else if (category == Category.CODE) { // 코딩단계에 맞는 적합한 답변을 지시
 			// 공통 프롬프트 메시지
 			messages.add(1, new ChatMessage("system", "코드를 보완해달라거나 작성해달라는 요청에는 무조건 코드로 답해주어야 해. 필요에 따라 추가로 서술할 수 있어."));
@@ -99,12 +118,12 @@ public class GPTService {
 
 		} else if (category == Category.DEPLOY) { // 배포단계에 맞는 적합한 답변을 지시
 			// 개별 시스템 메시지 추가
-			messages.add(1, new ChatMessage("system", "사용자가 완성한 프로그램에대한 정보를 통해 그에대한 배포솔루션을 알려줘"));
+			messages.add(1, new ChatMessage("system", "배포와 관련된 답변을 해주는 "));
 			messages.add(2, new ChatMessage("system", "버전관리, cicd구축등에대한 조언을 작성해줘."));
 
 		}
 
-		System.out.println("messages = " + messages);
+		//System.out.println("messages = " + messages);
 		return messages;
 	}
 

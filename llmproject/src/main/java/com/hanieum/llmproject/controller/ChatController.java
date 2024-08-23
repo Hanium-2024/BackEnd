@@ -1,5 +1,6 @@
 package com.hanieum.llmproject.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class ChatController {
 	public Response<String> ask(Authentication authentication,
 		@RequestParam("categoryType") String categoryType,
 		@PathVariable("chatroomId") Long chatroomId,
-		@RequestBody QuestionDto request) {
+		@RequestBody QuestionDto request) throws IOException {
 		// 로그인정보 받아오기
 		String loginId = authentication.getName();
 
@@ -54,4 +55,5 @@ public class ChatController {
 	public Response<List<String>> getChats(@PathVariable("chatroomId") Long chatroomId) {
 		return Response.success("채팅을 불러왔습니다.", chatService.getChats(chatroomId));
 	}
+
 }
