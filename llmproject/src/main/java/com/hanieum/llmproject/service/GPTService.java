@@ -113,7 +113,7 @@ public class GPTService {
 			messages.add(7, new ChatMessage("system", "테스트코드나 테스트케이스를 작성하기에 부족한 정보를 제시한다면 너가 스스로 질문을 되물어서 자세한 정보를 받아내야해."));
 			messages.add(8, new ChatMessage("system", "소프트웨어 개발의 테스트단계와 관련없는 질문에대해서는 사용자에게 질문을 재입력하도록 요구해."));
 			messages.add(9, new ChatMessage("system", "테스트 하기에 너무 간결하고, 의미없는코드에 대해서는 사용자에게 질문을 재입력하도록 요구해."));
-
+			messages.add(10, new ChatMessage("system", "코드를 작성해줄 때, 들여쓰기는 \\t 를 사용해서 표시해줘."));
 
 
 		} else if (category == Category.DEPLOY) { // 배포단계에 맞는 적합한 답변을 지시
