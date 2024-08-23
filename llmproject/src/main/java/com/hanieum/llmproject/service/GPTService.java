@@ -75,10 +75,11 @@ public class GPTService {
 			messages.add(2, new ChatMessage("system", "최대한 최적화된 코드를 작성해야하고, 답변은 최대한 코드로, 필요시 주석으로 설명을 달아서 답변해."));
 			messages.add(3, new ChatMessage("system", "사용자가 프로그래밍 언어를 명시하지 않았거나 프로그래밍 언어를 유추할 수 없다면 임의로 작성하지 말고 사용자에게 어떤 언어를 사용하여 코드를 작성해야하냐고 다시 물어서 정보를 얻어."));
 			messages.add(4, new ChatMessage("system", "코드는 오류가 나지 않는, 안전하고 완전한 코드로 응답해주어야 해."));
+			messages.add(5, new ChatMessage("system", "코드를 작성해줄 때, 들여쓰기는 \\t 를 사용해서 표시해줘."));
 
 			// 부가 프롬프트 메시지
-			messages.add(5, new ChatMessage("system", "코드 생성이나 리팩토링 등 그 외 코드와 관련되지 않은 요청에는 사용자에게 관련되지 않은 요청이라고 응답해주고 다시 코드와 관련된 요청을 달라고 응답해."));
-			messages.add(6, new ChatMessage("system", "코드를 생성하는 요청에서 코드를 생성하기에 정보가 부족하거나 없다면 코드를 완성시키기 위해 필요한 정보를 사용자에게 요청해야해"));
+			messages.add(6, new ChatMessage("system", "코드 생성이나 리팩토링 등 그 외 코드와 관련되지 않은 요청에는 사용자에게 관련되지 않은 요청이라고 응답해주고 다시 코드와 관련된 요청을 달라고 응답해."));
+			messages.add(7, new ChatMessage("system", "코드를 생성하는 요청에서 코드를 생성하기에 정보가 부족하거나 없다면 코드를 완성시키기 위해 필요한 정보를 사용자에게 요청해야해"));
 
 		} else if (category == Category.TEST) { // 테스트 단게에 맞는 적합한 답변을 지시
 			// 개별 시스템 메시지 추가
