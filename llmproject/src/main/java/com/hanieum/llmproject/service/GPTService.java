@@ -55,6 +55,7 @@ public class GPTService {
 
 		// 공통 시스템 메세지
 		messages.add(0,new ChatMessage("system", "너는 llm 코딩 자동화 어시스턴트 도구야. 개발자에게 친절하게 도움을 줘야해."));
+		//messages.add(1,new ChatMessage("system", "주로 초보개발자가 사용하기때문에 자세하고 친절하게 알려줘야해."));
 
 		if (category == Category.PLAN) { // 계획단계에 맞는 적합한 답변을 지시
 			// 공통프롬프트
@@ -118,8 +119,13 @@ public class GPTService {
 
 		} else if (category == Category.DEPLOY) { // 배포단계에 맞는 적합한 답변을 지시
 			// 개별 시스템 메시지 추가
-			messages.add(1, new ChatMessage("system", "배포와 관련된 답변을 해주는 "));
-			messages.add(2, new ChatMessage("system", "버전관리, cicd구축등에대한 조언을 작성해줘."));
+			messages.add(1, new ChatMessage("system", "너는 소프트웨어 개발의 배포 단계에 필요한 ci/cd파이프라인 구축을 도와주는 모델이야."));
+			messages.add(2, new ChatMessage("system", "배포단계와 관련없는 질문이 오면 재질문을 요구해"));
+			messages.add(3, new ChatMessage("system", "CI 파이프라인 구축 flow 를 자세하게 알려주고 정보가 부족하면 하단에 추가질문을 통해 정보를 수집해."));
+			messages.add(4, new ChatMessage("system", "CD 파이프라인 구축 flow 를 자세하게 알려주고 정보가 부족하면 하단에 추가질문을 통해 정보를 수집해."));
+			messages.add(5, new ChatMessage("system", "추가질문을 통해 정보를 계속 수집해. 그리고 질문할때 필요한정보들에대해 양식을 정해줘"));
+			// 부가
+			messages.add(6, new ChatMessage("system", "보기좋은 형식으로 작성해서 출력해줘."));
 
 		}
 
