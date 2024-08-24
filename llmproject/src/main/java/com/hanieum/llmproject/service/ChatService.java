@@ -110,7 +110,7 @@ public class ChatService {
 
 		// gpt 응답
 		String response = gptService.gptRequest(chatRequestDto);
-		System.out.println("response = \n" + response);
+		//System.out.println("response = \n" + response);
 
 		// 디자인일때
 		Category category = chatroomService.loadCategory(categoryType);
@@ -124,18 +124,20 @@ public class ChatService {
 
 			// plant uml 코드부분 -> plant uml에 전달 -> 이미지 blob저장(Base64로 인코딩된 JSON 문자열을 저장)
 			if (answers[0].replace("A1:", "").trim().equals("없음")) {
-				System.out.println("Answer 1: 생성할 plant uml코드가 없습니다.");
-				System.out.println("Answer 2: " + answers[1].replace("A2:", "").trim());
+				//System.out.println("Answer 1: 생성할 plant uml코드가 없습니다.");
+				//System.out.println("Answer 2: " + answers[1].replace("A2:", "").trim());
 				saveChat(chatroomId, true, false, answers[1].replace("A2:", "").trim());
+				return answers[1].replace("A2:", "").trim();
 			} else {
-				System.out.println("Answer 1: " + answers[0].replace("A1:", "").trim());
+				//System.out.println("Answer 1: " + answers[0].replace("A1:", "").trim());
 				// saveChat(chatroomId, true, false, answers[0].replace("A1:", "").trim()); // 확인용 임시코드저장
 				String base64ImageJson = plantUml(answers[0].replace("A1:", "").trim());
 				saveChat(chatroomId, true, true, base64ImageJson);
 
 				// 글자설명 부분 저장
-				System.out.println("Answer 2: " + answers[1].replace("A2:", "").trim());
+				//System.out.println("Answer 2: " + answers[1].replace("A2:", "").trim());
 				saveChat(chatroomId, true, false, answers[1].replace("A2:", "").trim());
+				return base64ImageJson + "\n\n" + answers[1].replace("A2:", "").trim();
 			}
 
 		} else {
@@ -143,9 +145,8 @@ public class ChatService {
 			saveChat(chatroomId, true, false, question);  // 질문저장
 			saveChat(chatroomId, false, false, response); // 답변저장
 
+			return response;
 		}
-
-		return response;
 	}
 
 	public String askImage(Long chatroomId, String question) {
@@ -169,7 +170,7 @@ public class ChatService {
 		// PlantUML 다이어그램을 byte로 생성
 		SourceStringReader reader = new SourceStringReader(umlSource);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		//reader.outputImage(baos).getDescription();
+		reader.outputImage(baos).getDescription();
 
 		// 오류검증
 		if (reader.outputImage(baos) == null) {
@@ -182,5 +183,16 @@ public class ChatService {
 		// JSON 형태로 반환
 		String jsonResponse = "{\"b64_json\":\"" + base64Image + "\"}";
 		return jsonResponse;
+
+//		// PlantUML 다이어그램을 이미지 파일로 생성
+//		SourceStringReader reader = new SourceStringReader(umlSource);
+//		File outputFile = new File("diagram.png");
+//		try (OutputStream png = new FileOutputStream(outputFile)) {
+//			// 다이어그램 생성
+//			reader.outputImage(png).getDescription();
+//		}
+//
+//		System.out.println("다이어그램이 생성되었습니다: " + outputFile.getAbsolutePath());
+//		return "t";
 	}
 }
