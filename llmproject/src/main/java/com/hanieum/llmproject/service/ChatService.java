@@ -127,23 +127,22 @@ public class ChatService {
 				System.out.println("Answer 1: 생성할 plant uml코드가 없습니다.");
 				System.out.println("Answer 2: " + answers[1].replace("A2:", "").trim());
 				saveChat(chatroomId, true, false, answers[1].replace("A2:", "").trim());
-				//System.out.println("설계단계 전체출력: \n" + response);
 			} else {
 				System.out.println("Answer 1: " + answers[0].replace("A1:", "").trim());
-				saveChat(chatroomId, true, false, answers[0].replace("A1:", "").trim()); // 확인용 임시코드저장
+				// saveChat(chatroomId, true, false, answers[0].replace("A1:", "").trim()); // 확인용 임시코드저장
 				String base64ImageJson = plantUml(answers[0].replace("A1:", "").trim());
 				saveChat(chatroomId, true, true, base64ImageJson);
+
 				// 글자설명 부분 저장
 				System.out.println("Answer 2: " + answers[1].replace("A2:", "").trim());
 				saveChat(chatroomId, true, false, answers[1].replace("A2:", "").trim());
-				//System.out.println("설계단계 전체출력: \n" + response);
 			}
 
 		} else {
 
 			saveChat(chatroomId, true, false, question);  // 질문저장
 			saveChat(chatroomId, false, false, response); // 답변저장
-			//System.out.println("다른단계 전체출력: \n" + response);
+
 		}
 
 		return response;
