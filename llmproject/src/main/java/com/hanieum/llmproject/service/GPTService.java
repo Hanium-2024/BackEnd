@@ -92,14 +92,15 @@ public class GPTService {
 		} else if (category == Category.CODE) { // 코딩단계에 맞는 적합한 답변을 지시
 			// 공통 프롬프트 메시지
 			messages.add(1, new ChatMessage("system", "코드를 보완해달라거나 작성해달라는 요청에는 무조건 코드로 답해주어야 해. 필요에 따라 추가로 서술할 수 있어."));
-			messages.add(2, new ChatMessage("system", "최대한 최적화된 코드를 작성해야하고, 답변은 최대한 코드로, 필요시 주석으로 설명을 달아서 답변해."));
-			messages.add(3, new ChatMessage("system", "사용자가 프로그래밍 언어를 명시하지 않았거나 프로그래밍 언어를 유추할 수 없다면 임의로 작성하지 말고 사용자에게 어떤 언어를 사용하여 코드를 작성해야하냐고 다시 물어서 정보를 얻어."));
-			messages.add(4, new ChatMessage("system", "코드는 오류가 나지 않는, 안전하고 완전한 코드로 응답해주어야 해."));
-			messages.add(5, new ChatMessage("system", "코드를 작성해줄 때, 들여쓰기는 \\t 를 사용해서 표시해줘."));
+			messages.add(2, new ChatMessage("system", "코드를 작성해줄 때는 코드의 가독성이 생기도록 무조건 '\n'를 사용해서 개행을 만들어야해."));
+			messages.add(3, new ChatMessage("system", "최대한 최적화된 코드를 작성해야하고, 답변은 최대한 코드로, 필요시 주석으로 설명을 달아서 답변해."));
+			messages.add(4, new ChatMessage("system", "사용자가 프로그래밍 언어를 명시하지 않았거나 프로그래밍 언어를 유추할 수 없다면 임의로 작성하지 말고 사용자에게 어떤 언어를 사용하여 코드를 작성해야하냐고 다시 물어서 정보를 얻어."));
+			messages.add(5, new ChatMessage("system", "코드는 오류가 나지 않는, 안전하고 완전한 코드로 응답해주어야 해."));
 
 			// 부가 프롬프트 메시지
 			messages.add(6, new ChatMessage("system", "코드 생성이나 리팩토링 등 그 외 코드와 관련되지 않은 요청에는 사용자에게 관련되지 않은 요청이라고 응답해주고 다시 코드와 관련된 요청을 달라고 응답해."));
 			messages.add(7, new ChatMessage("system", "코드를 생성하는 요청에서 코드를 생성하기에 정보가 부족하거나 없다면 코드를 완성시키기 위해 필요한 정보를 사용자에게 요청해야해"));
+			messages.add(8, new ChatMessage("system", "코드를 생성했을 때, 코드에서 4자리의 공백은 하나의 '\t'로 치환해서 값을 응답해줘"));
 
 		} else if (category == Category.TEST) { // 테스트 단게에 맞는 적합한 답변을 지시
 			// 개별 시스템 메시지 추가
@@ -114,7 +115,9 @@ public class GPTService {
 			messages.add(7, new ChatMessage("system", "테스트코드나 테스트케이스를 작성하기에 부족한 정보를 제시한다면 너가 스스로 질문을 되물어서 자세한 정보를 받아내야해."));
 			messages.add(8, new ChatMessage("system", "소프트웨어 개발의 테스트단계와 관련없는 질문에대해서는 사용자에게 질문을 재입력하도록 요구해."));
 			messages.add(9, new ChatMessage("system", "테스트 하기에 너무 간결하고, 의미없는코드에 대해서는 사용자에게 질문을 재입력하도록 요구해."));
-			messages.add(10, new ChatMessage("system", "코드를 작성해줄 때, 들여쓰기는 \\t 를 사용해서 표시해줘."));
+			messages.add(10, new ChatMessage("system", "코드를 작성해줄 때는 코드의 가독성이 생기도록 무조건 '\n'를 사용해서 개행을 만들어야해."));
+			messages.add(11, new ChatMessage("system", "코드를 생성했을 때, 코드에서 4자리의 공백은 하나의 '\t'로 치환해서 값을 응답해줘"));
+
 
 
 		} else if (category == Category.DEPLOY) { // 배포단계에 맞는 적합한 답변을 지시
