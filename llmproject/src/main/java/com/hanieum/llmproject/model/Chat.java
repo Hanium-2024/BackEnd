@@ -62,7 +62,7 @@ public class Chat {
 	}
 
 	public String getMessage() {
-		return Arrays.toString(this.content);
+		return new String(this.content);
 	}
 
 	public boolean isUserMessage() {
