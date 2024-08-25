@@ -1,6 +1,7 @@
 package com.hanieum.llmproject.model;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,8 +31,8 @@ public class Chat {
 	@Enumerated(EnumType.STRING)
 	private ContentType contentType;
 	@Lob
-	@Column(columnDefinition = "TEXT")
-	private String content;
+	@Column(columnDefinition = "LONGBLOB")
+	private byte[] content;
 	private LocalDateTime outputTime;
 
 	// 메소드
@@ -40,7 +41,7 @@ public class Chat {
 
 		// TODO subString으로 IMAGE_output식별로 분리해서 저장
 		this.contentType = determineContentType(isUserMessage, isImage);
-		this.content = message;
+		this.content = message.getBytes();
 		this.outputTime = LocalDateTime.now();
 	}
 
@@ -61,7 +62,7 @@ public class Chat {
 	}
 
 	public String getMessage() {
-		return this.content;
+		return Arrays.toString(this.content);
 	}
 
 	public boolean isUserMessage() {
