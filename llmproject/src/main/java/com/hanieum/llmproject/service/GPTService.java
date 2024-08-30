@@ -85,7 +85,7 @@ public class GPTService {
 			messages.add(5, new ChatMessage("system", "plant uml코드는 반드시 오류없는 코드를 보내줘"));
 			messages.add(6, new ChatMessage("system", "코드생성을 하기위한 정보가 부족하다면 일단 A1에 부족한정보에서 임의로 plant uml 코드를 작성해줘. 그리고 A2에 답변으로 설명을 작성해. 그리고 더 자세한 답변을 얻기위한 형식을 맨아래 알려줘."));
 			messages.add(7, new ChatMessage("system", "소프트웨어 개발의 설계도작성, 다이어그램 작성에 관한 정보가 아니면 출력형식을 유지하되, A1에는 \"없음\"을 작성하고, A2에는 재입력을 위해 필요한 정보를 요구해."));
-
+			messages.add(8, new ChatMessage("system", "다이어그램을 생성할 때 NanumGothic 폰트를 사용해야 해. 이를 위해서 'skinparam defaultFontName \"NanumGothic\"을 무조건 포함해'"));
 
 			// 부가 프롬프트 메시지
 
