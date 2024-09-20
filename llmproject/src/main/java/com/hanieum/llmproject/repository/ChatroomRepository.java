@@ -10,11 +10,9 @@ import com.hanieum.llmproject.model.Chatroom;
 import com.hanieum.llmproject.model.User;
 
 public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
-	List<Chatroom> findAllByUserAndCategory(User user, Category category);
+	List<Chatroom> findAllByUser(User user);
 
 	Optional<Chatroom> findByUserAndId(User user, Long id);
-
-	Optional<Chatroom> findByUserAndCategoryAndId(User user, Category category, Long id);
 
 	boolean existsById(Long id);
 }

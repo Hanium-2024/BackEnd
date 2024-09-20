@@ -22,31 +22,16 @@ public class ChatroomService {
 	private final UserService userService;
 	private final ChatroomRepository chatroomRepository;
 
-	public Map<Long, String> getChatrooms(String loginId, String categoryType) {
+	public Map<Long, String> getChatrooms(String loginId) {
 		User user = loadUser(loginId);
 
-		Category category = loadCategory(categoryType);
-
-		List<Chatroom> chatroomList = chatroomRepository.findAllByUserAndCategory(user, category);
+		List<Chatroom> chatroomList = chatroomRepository.findAllByUser(user);
 
 		return Chatroom.getSavedChatrooms(chatroomList);
 	}
 
 	private User loadUser(String loginId) {
 		return userService.findUserByLoginId(loginId);
-	}
-
-	// CategoryService를 따로 만들어 책임 분리 고려해야 함.
-	public Category loadCategory(String categoryString) {
-		validateCategory(categoryString);
-
-		return Category.fromString(categoryString);
-	}
-
-	private void validateCategory(String categoryType) {
-		if (!Category.isValid(categoryType)) {
-			throw new CustomException(ErrorCode.CATEGORY_NOT_VALID);
-		}
 	}
 
 	// ---채팅 자동저장 관련---
@@ -57,20 +42,19 @@ public class ChatroomService {
 	}
 
 	// 찾고 없으면 새채팅방 자동생성(채팅방없을시createChatroom호출)
-	public Long findOrCreateChatroom(String userId, Long chatroomId, String categoryType, String title) {
-		Category category = loadCategory(categoryType);
+	public Long findOrCreateChatroom(String userId, Long chatroomId, String title) {
 		User user = loadUser(userId);
 
 		// 채팅방 (사용자, 카테고리, 채팅방아이디 불일치 -> 카테고리항목에 새로운 채팅방생성)
 		Chatroom chatroom = chatroomRepository.findByUserAndId(user, chatroomId)
-			.orElseGet(() -> createChatRoom(userId, chatroomId, category, title));
+			.orElseGet(() -> createChatRoom(userId, chatroomId, title));
 		return chatroom.getChatroomId();
 	}
 
 	// 채팅방 없을시 생성
-	private Chatroom createChatRoom(String userId, Long chatroomId, Category categoryType, String title) {
+	private Chatroom createChatRoom(String userId, Long chatroomId, String title) {
 		User user = loadUser(userId);
-		Chatroom chatroom = new Chatroom(user, chatroomId, categoryType, title);
+		Chatroom chatroom = new Chatroom(user, chatroomId, title);
 		System.out.println("채팅방을 생성합니다.");
 		chatroomRepository.save(chatroom);
 		return chatroom;
