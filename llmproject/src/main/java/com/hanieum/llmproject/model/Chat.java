@@ -29,6 +29,9 @@ public class Chat {
 	private Chatroom chatroom;
 
 	@Enumerated(EnumType.STRING)
+	private Category category;
+
+	@Enumerated(EnumType.STRING)
 	private ContentType contentType;
 	@Lob
 	@Column(columnDefinition = "LONGBLOB")
@@ -36,10 +39,9 @@ public class Chat {
 	private LocalDateTime outputTime;
 
 	// 메소드
-	public Chat(Chatroom chatroomId, boolean isUserMessage, boolean isImage, String message) {
+	public Chat(Chatroom chatroomId, Category category, boolean isUserMessage, boolean isImage, String message) {
 		this.chatroom = chatroomId;
-
-		// TODO subString으로 IMAGE_output식별로 분리해서 저장
+		this.category = category;
 		this.contentType = determineContentType(isUserMessage, isImage);
 		this.content = message.getBytes();
 		this.outputTime = LocalDateTime.now();
