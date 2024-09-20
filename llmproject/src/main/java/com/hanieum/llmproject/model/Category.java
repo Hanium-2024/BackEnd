@@ -9,8 +9,7 @@ public enum Category {
 	PLAN,
 	DESIGN,
 	CODE,
-	TEST,
-	DEPLOY;
+	RETROSPECT;
 
 	public static boolean isValid(String value) {
 		return Arrays.stream(Category.values())
