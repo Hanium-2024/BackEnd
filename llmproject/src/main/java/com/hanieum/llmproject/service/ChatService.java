@@ -82,6 +82,7 @@ public class ChatService {
 		return title;
 	}
 
+	// 채팅목록 카테고리별로 불러오기
 	public List<String> getChats(Long chatroomId, String categoryType) {
 		var chatroom = chatroomService.findChatroom(chatroomId);
 
@@ -94,7 +95,7 @@ public class ChatService {
 			.toList();
 	}
 
-	// CategoryService를 따로 만들어 책임 분리 고려해야 함.
+
 	public Category loadCategory(String categoryString) {
 		validateCategory(categoryString);
 
@@ -107,7 +108,7 @@ public class ChatService {
 		}
 	}
 
-	// sse응답기능
+	// gpt질문하는 메인기능
 	public String ask(String loginId, Long chatroomId, String categoryType, String question) throws IOException {
 
 		// 질문 기반 채팅방제목생성
@@ -168,20 +169,7 @@ public class ChatService {
 		}
 	}
 
-//	public String askImage(Long chatroomId, String question) {
-//		String image = dallEService.generateImage(question);
-//
-//		var title = createTitle(question);
-//		var userId = userService.getLoginId();
-//
-//		var returnedChatroomId = chatroomService.findOrCreateChatroom(userId, chatroomId, "DESIGN", title);
-//
-//		saveChat(returnedChatroomId, true, false, question);
-//		saveChat(returnedChatroomId, false, true, image);
-//
-//		return image;
-//	}
-
+	// 설계도생성기능
 	private String plantUml(String request) throws IOException {
 		// PlantUML 다이어그램 요청
 		String umlSource = request;
@@ -215,11 +203,23 @@ public class ChatService {
 //		return "t";
 	}
 
+	// 회고를위한 채팅선택기능
 	@Transactional
-	public void retrospectChat(Long chatId) {
-		Chat chat = chatRepository.findById(chatId).orElse(null);
+	public void checkRetrospectChat(Long chatId) {
+		Chat chat = chatRepository.findById(chatId).
+				orElseThrow(() -> new CustomException(ErrorCode.CHAT_NOT_FOUND));
 		if (chat != null) {
 			chat.setRetrospect(!chat.isRetrospect());
 		}
+	}
+
+	// 회고를 위해 선택된 채팅목록 불러오기 기능
+	public List<String> getRetrospectChats(Long chatroomId) {
+		Chatroom chatroom = chatroomService.findChatroom(chatroomId);
+		return chatRepository.findAllByChatroomAndRetrospect(chatroom, true)
+				.stream()
+				.sorted(Comparator.comparing(Chat::getOutputTime))
+				.map(Chat::getMessage)
+				.toList();
 	}
 }
