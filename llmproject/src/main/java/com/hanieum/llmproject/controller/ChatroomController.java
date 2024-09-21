@@ -2,17 +2,16 @@ package com.hanieum.llmproject.controller;
 
 import java.util.Map;
 
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 
+import com.hanieum.llmproject.dto.ChatroomRequest;
+import com.hanieum.llmproject.dto.ChatroomResponse;
 import com.hanieum.llmproject.dto.Response;
 import com.hanieum.llmproject.service.ChatroomService;
-
-import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,7 +25,6 @@ public class ChatroomController {
 	}
 
 	// 채팅방 사용자 저장기능
-	@SuppressWarnings("checkstyle:RegexpSinglelineJava")
 	@PutMapping("/save/{chatroomId}")
 	public Response<Void> saveChatroom(Authentication authentication,
 		@PathVariable("chatroomId") Long chatroomId) {
@@ -44,5 +42,13 @@ public class ChatroomController {
 		String loginId = authentication.getName();
 		chatroomService.deleteChatroom(loginId, chatroomId);
 		return Response.success("저장된 채팅방을 삭제합니다.", null);
+	}
+
+	@ResponseStatus(HttpStatus.CREATED)
+	@PostMapping("/chatrooms")
+	public Response<ChatroomResponse.Detail> createChatroom(Authentication authentication,
+			@Valid @RequestBody ChatroomRequest.Create request) {
+		String loginId = authentication.getName();
+		return Response.success("채팅방 생성 성공", chatroomService.createChatroom(loginId, request.title()));
 	}
 }

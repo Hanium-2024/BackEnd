@@ -45,7 +45,6 @@ public class ChatController {
 		return Response.success("질문성공", chatService.ask(loginId, chatroomId, categoryType, request.getQuestion()));
 	}
 
-	// 카테고리별로 채팅목록 불러오기
 	@GetMapping("/chats/{chatroomId}")
 	public Response<List<String>> getChats(@PathVariable("chatroomId") Long chatroomId,
 										   @RequestParam("categoryType") String categoryType) {
@@ -65,8 +64,4 @@ public class ChatController {
 	public Response<List<String>> getRetrospectChats(@PathVariable("chatroomId") Long chatroomId) {
 		return Response.success("회고에서 사용할 채팅목록을 불러왔습니다.", chatService.getRetrospectChats(chatroomId));
 	}
-
-
-
-
 }
