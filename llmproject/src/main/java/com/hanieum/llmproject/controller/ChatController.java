@@ -57,4 +57,16 @@ public class ChatController {
 		return Response.success("채팅을 불러왔습니다.", chatService.getChats(chatroomId, categoryType));
 	}
 
+	@PostMapping("/chat/retrospect/{chatId}")
+	public Response<Void> retrospectChat(@PathVariable("chatId") Long chatId) {
+
+		chatService.retrospectChat(chatId);
+		return Response.success("회고를위한 채팅선택", null);
+	}
+
+
+
+
+
+
 }

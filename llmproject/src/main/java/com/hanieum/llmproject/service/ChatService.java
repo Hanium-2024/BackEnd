@@ -23,6 +23,7 @@ import com.hanieum.llmproject.repository.ChatRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -212,5 +213,13 @@ public class ChatService {
 //
 //		System.out.println("다이어그램이 생성되었습니다: " + outputFile.getAbsolutePath());
 //		return "t";
+	}
+
+	@Transactional
+	public void retrospectChat(Long chatId) {
+		Chat chat = chatRepository.findById(chatId).orElse(null);
+		if (chat != null) {
+			chat.setRetrospect(!chat.isRetrospect());
+		}
 	}
 }
