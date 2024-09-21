@@ -45,16 +45,23 @@ public class ChatController {
 		return Response.success("질문성공", chatService.ask(loginId, chatroomId, categoryType, request.getQuestion()));
 	}
 
-//	@PostMapping("/main/design/{chatroomId}")
-//	public Response<String> askImage(@RequestBody String question,
-//		@PathVariable("chatroomId") Long chatroomId) {
-//		return Response.success("설계도 이미지 생성 완료", chatService.askImage(chatroomId, question));
-//	}
-
-	// todo: api 변경 필요 -> /chatrooms/{chatroomId}/chats
 	@GetMapping("/chats/{chatroomId}")
 	public Response<List<String>> getChats(@PathVariable("chatroomId") Long chatroomId,
 										   @RequestParam("categoryType") String categoryType) {
 		return Response.success("채팅을 불러왔습니다.", chatService.getChats(chatroomId, categoryType));
+	}
+
+	// 회고에서 사용할 채팅 선택기능
+	@PostMapping("/chat/retrospect/{chatId}")
+	public Response<Void> retrospectChat(@PathVariable("chatId") Long chatId) {
+
+		chatService.checkRetrospectChat(chatId);
+		return Response.success("회고에서 사용할 채팅을 선택했습니다.", null);
+	}
+
+	// 회고에서 사용할 채팅목록 불러오기
+	@GetMapping("/chats/retrospect/{chatroomId}")
+	public Response<List<String>> getRetrospectChats(@PathVariable("chatroomId") Long chatroomId) {
+		return Response.success("회고에서 사용할 채팅목록을 불러왔습니다.", chatService.getRetrospectChats(chatroomId));
 	}
 }

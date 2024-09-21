@@ -18,6 +18,7 @@ public enum ErrorCode {
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
 	CATEGORY_NOT_VALID(HttpStatus.NOT_FOUND, "옳지 않은 카테고리 종류입니다."),
 	CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방 정보를 찾을수없습니다."),
+	CHAT_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅 정보를 찾을수없습니다."),
 	JSON_PARSE_ERROR(HttpStatus.BAD_REQUEST, "GPT응답을 파싱하는 중 오류가 발생했습니다.");
 
 	private final HttpStatus status;
