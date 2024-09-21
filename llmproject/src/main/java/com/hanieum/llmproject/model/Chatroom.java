@@ -24,9 +24,6 @@ public class Chatroom {
 	@Column(name = "CHATROOM_ID")
 	private Long id;
 
-	@Enumerated(EnumType.STRING)
-	private Category category;
-
 	@ManyToOne
 	@JoinColumn(name = "USER_ID")
 	private User user;
@@ -34,10 +31,9 @@ public class Chatroom {
 	private String title;
 
 	// 채팅저장관련
-	public Chatroom(User user, Long chatroomId, Category category, String title) {
+	public Chatroom(User user, Long chatroomId, String title) {
 		this.user = user;
 		this.id = chatroomId;
-		this.category = category;
 		this.title = title;
 	}
 

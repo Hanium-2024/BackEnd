@@ -20,11 +20,9 @@ public class ChatroomController {
 	private final ChatroomService chatroomService;
 
 	@GetMapping("/chatrooms/titles")
-	public Response<Map<Long, String>> getChatrooms(
-		@RequestParam("loginId") String loginId,
-		@RequestParam("categoryType") String categoryType) {
+	public Response<Map<Long, String>> getChatrooms(@RequestParam("loginId") String loginId) {
 
-		return Response.success("채팅방 목록을 불러왔습니다.", chatroomService.getChatrooms(loginId, categoryType));
+		return Response.success("채팅방 목록을 불러왔습니다.", chatroomService.getChatrooms(loginId));
 	}
 
 	// 채팅방 사용자 저장기능

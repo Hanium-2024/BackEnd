@@ -45,15 +45,16 @@ public class ChatController {
 		return Response.success("질문성공", chatService.ask(loginId, chatroomId, categoryType, request.getQuestion()));
 	}
 
-	@PostMapping("/main/design/{chatroomId}")
-	public Response<String> askImage(@RequestBody String question,
-		@PathVariable("chatroomId") Long chatroomId) {
-		return Response.success("설계도 이미지 생성 완료", chatService.askImage(chatroomId, question));
-	}
+//	@PostMapping("/main/design/{chatroomId}")
+//	public Response<String> askImage(@RequestBody String question,
+//		@PathVariable("chatroomId") Long chatroomId) {
+//		return Response.success("설계도 이미지 생성 완료", chatService.askImage(chatroomId, question));
+//	}
 
 	@GetMapping("/chats/{chatroomId}")
-	public Response<List<String>> getChats(@PathVariable("chatroomId") Long chatroomId) {
-		return Response.success("채팅을 불러왔습니다.", chatService.getChats(chatroomId));
+	public Response<List<String>> getChats(@PathVariable("chatroomId") Long chatroomId,
+										   @RequestParam("categoryType") String categoryType) {
+		return Response.success("채팅을 불러왔습니다.", chatService.getChats(chatroomId, categoryType));
 	}
 
 }

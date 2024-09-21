@@ -49,10 +49,9 @@ public class GPTService {
 	private final ChatroomService chatroomService;
 
 	// 프롬프트엔지니어링 부분
-	public List<ChatMessage> applyPromptEngineering(List<ChatMessage> messages, String categoryType) {
-		// 카테고리별로 프롬프트 엔지니어링 하기
-		Category category = chatroomService.loadCategory(categoryType);
+	public List<ChatMessage> applyPromptEngineering(List<ChatMessage> messages, Category category) {
 
+		// 카테고리별로 프롬프트 엔지니어링 하기
 		// 공통 시스템 메세지
 		messages.add(0,new ChatMessage("system", "너는 llm 코딩 자동화 어시스턴트 도구야. 개발자에게 친절하게 도움을 줘야해."));
 		//messages.add(1,new ChatMessage("system", "주로 초보개발자가 사용하기때문에 자세하고 친절하게 알려줘야해."));
@@ -102,33 +101,11 @@ public class GPTService {
 			messages.add(7, new ChatMessage("system", "코드를 생성하는 요청에서 코드를 생성하기에 정보가 부족하거나 없다면 코드를 완성시키기 위해 필요한 정보를 사용자에게 요청해야해"));
 			messages.add(8, new ChatMessage("system", "코드를 생성했을 때, 코드에서 4자리의 공백은 하나의 '\t'로 치환해서 값을 응답해줘"));
 
-		} else if (category == Category.TEST) { // 테스트 단게에 맞는 적합한 답변을 지시
+		} else if (category == Category.RETROSPECT) { // 테스트 단게에 맞는 적합한 답변을 지시
 			// 개별 시스템 메시지 추가
-			messages.add(1, new ChatMessage("system", "너는 소프트웨어 개발의 테스트 단계에 필요한 테스트코드나 테스트케이스를 작성해주는 모델이야"));
-			messages.add(2, new ChatMessage("system", "코드가 질문으로 들어오면 그 코드에 적합한 테스트코드를 작성해주면 돼."));
-			messages.add(3, new ChatMessage("system", "코드나 주제에 맞는 여러가지 테스트케이스도 함께 제시해줘."));
-			messages.add(4, new ChatMessage("system", "잘못된코드이거나 오류가있으면 오류를 수정한후에 테스트코드를 작성해줘. 오류를 수정했으면 사용자에게 알려주는것도 내용에포함해."));
-			messages.add(5, new ChatMessage("system", "코드에 담긴 기능이 여러개라면 각각의 기능에대해 빠짐없이 테스트코드를 각각 작성해줘."));
-			messages.add(6, new ChatMessage("system", "테스트코드와 테스트케이스를 최대한 상세하게 작성해줘."));
-
-			// 부가프롬프트
-			messages.add(7, new ChatMessage("system", "테스트코드나 테스트케이스를 작성하기에 부족한 정보를 제시한다면 너가 스스로 질문을 되물어서 자세한 정보를 받아내야해."));
-			messages.add(8, new ChatMessage("system", "소프트웨어 개발의 테스트단계와 관련없는 질문에대해서는 사용자에게 질문을 재입력하도록 요구해."));
-			messages.add(9, new ChatMessage("system", "테스트 하기에 너무 간결하고, 의미없는코드에 대해서는 사용자에게 질문을 재입력하도록 요구해."));
-			messages.add(10, new ChatMessage("system", "코드를 작성해줄 때는 코드의 가독성이 생기도록 무조건 '\n'를 사용해서 개행을 만들어야해."));
-			messages.add(11, new ChatMessage("system", "코드를 생성했을 때, 코드에서 4자리의 공백은 하나의 '\t'로 치환해서 값을 응답해줘"));
+			messages.add(1, new ChatMessage("system", "너는 소프트웨어 개발의 테스트 단계에 필요한 회고록을 작성해주는 모델이야"));
 
 
-
-		} else if (category == Category.DEPLOY) { // 배포단계에 맞는 적합한 답변을 지시
-			// 개별 시스템 메시지 추가
-			messages.add(1, new ChatMessage("system", "너는 소프트웨어 개발의 배포 단계에 필요한 ci/cd파이프라인 구축을 도와주는 모델이야."));
-			messages.add(2, new ChatMessage("system", "배포단계와 관련없는 질문이 오면 재질문을 요구해"));
-			messages.add(3, new ChatMessage("system", "CI 파이프라인 구축 flow 를 자세하게 알려주고 정보가 부족하면 하단에 추가질문을 통해 정보를 수집해."));
-			messages.add(4, new ChatMessage("system", "CD 파이프라인 구축 flow 를 자세하게 알려주고 정보가 부족하면 하단에 추가질문을 통해 정보를 수집해."));
-			messages.add(5, new ChatMessage("system", "추가질문을 통해 정보를 계속 수집해. 그리고 질문할때 필요한정보들에대해 양식을 정해줘"));
-			// 부가
-			messages.add(6, new ChatMessage("system", "보기좋은 형식으로 작성해서 출력해줘."));
 
 		}
 
