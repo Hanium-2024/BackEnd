@@ -51,10 +51,10 @@ public class ChatController {
 //		return Response.success("설계도 이미지 생성 완료", chatService.askImage(chatroomId, question));
 //	}
 
+	// todo: api 변경 필요 -> /chatrooms/{chatroomId}/chats
 	@GetMapping("/chats/{chatroomId}")
 	public Response<List<String>> getChats(@PathVariable("chatroomId") Long chatroomId,
 										   @RequestParam("categoryType") String categoryType) {
 		return Response.success("채팅을 불러왔습니다.", chatService.getChats(chatroomId, categoryType));
 	}
-
 }

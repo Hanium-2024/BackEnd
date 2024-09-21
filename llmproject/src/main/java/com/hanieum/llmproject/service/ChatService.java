@@ -108,12 +108,7 @@ public class ChatService {
 
 	// sse응답기능
 	public String ask(String loginId, Long chatroomId, String categoryType, String question) throws IOException {
-
-		// 질문 기반 채팅방제목생성
-		String title = createTitle(question);
-
-		// 채팅방 찾기(없으면 생성)
-		Long chatRoomId = chatroomService.findOrCreateChatroom(loginId, chatroomId, title);
+		Chatroom chatroom = chatroomService.findChatroom(chatroomId);
 
 		// 카테고리 불러오기
 		Category category = loadCategory(categoryType);
@@ -123,7 +118,7 @@ public class ChatService {
 			model(ChatGptConfig.CHAT_MODEL).
 			maxTokens(ChatGptConfig.MAX_TOKEN).
 			temperature(ChatGptConfig.TEMPERATURE).
-			messages(gptService.applyPromptEngineering(compositeMessage(chatRoomId, category, question), category)).
+			messages(gptService.applyPromptEngineering(compositeMessage(chatroomId, category, question), category)).
 			build();
 
 		// gpt 응답

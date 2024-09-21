@@ -4,15 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Chatroom {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "CHATROOM_ID")
 	private Long id;
 
@@ -31,10 +26,10 @@ public class Chatroom {
 	private String title;
 
 	// 채팅저장관련
-	public Chatroom(User user, Long chatroomId, String title) {
+	public Chatroom(User user, String title) {
 		this.user = user;
-		this.id = chatroomId;
 		this.title = title;
+		this.saved = true;
 	}
 
 	public static Map<Long, String> getSavedChatrooms(List<Chatroom> chatroomList) {
