@@ -10,4 +10,5 @@ import com.hanieum.llmproject.model.Chatroom;
 
 public interface ChatRepository extends JpaRepository<Chat, Long> {
 	List<Chat> findAllByChatroomAndCategory(Chatroom chatroom, Category category);
+	List<Chat> findAllByChatroomAndRetrospect(Chatroom chatroom, boolean retrosepct);
 }

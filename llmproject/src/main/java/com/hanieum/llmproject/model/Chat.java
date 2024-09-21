@@ -15,8 +15,10 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
+@DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Chat {
 	@Id
@@ -37,6 +39,8 @@ public class Chat {
 	@Column(columnDefinition = "LONGBLOB")
 	private byte[] content;
 	private LocalDateTime outputTime;
+
+	private boolean retrospect;
 
 	// 메소드
 	public Chat(Chatroom chatroomId, Category category, boolean isUserMessage, boolean isImage, String message) {
@@ -70,6 +74,10 @@ public class Chat {
 	public boolean isUserMessage() {
 		return this.contentType == ContentType.Prompt;
 	}
+
+	public boolean isRetrospect() { return retrospect; }
+
+	public void setRetrospect(boolean retrospect) { this.retrospect = retrospect; }
 
 	// Enum 타입 정의
 	private enum ContentType {
