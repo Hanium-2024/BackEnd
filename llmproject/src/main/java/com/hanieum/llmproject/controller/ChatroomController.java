@@ -24,18 +24,8 @@ public class ChatroomController {
 		return Response.success("채팅방 목록을 불러왔습니다.", chatroomService.getChatrooms(loginId));
 	}
 
-	// 채팅방 사용자 저장기능
-	@PutMapping("/save/{chatroomId}")
-	public Response<Void> saveChatroom(Authentication authentication,
-		@PathVariable("chatroomId") Long chatroomId) {
-
-		String loginId = authentication.getName();
-		chatroomService.saveChatroom(loginId, chatroomId);
-		return Response.success("채팅방을 저장합니다.", null);
-	}
-
 	// 채팅방 사용자 삭제기능
-	@PutMapping("/delete/{chatroomId}")
+	@DeleteMapping("/delete/{chatroomId}")
 	public Response<Void> deleteChatroom(Authentication authentication,
 		@PathVariable("chatroomId") Long chatroomId) {
 
