@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.hanieum.llmproject.dto.chat.ChatRequest;
+import com.hanieum.llmproject.dto.chat.ChatResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,5 +69,11 @@ public class ChatController {
 	@GetMapping("/chats/retrospect/{chatroomId}")
 	public Response<List<String>> getRetrospectChats(@PathVariable("chatroomId") Long chatroomId) {
 		return Response.success("회고에서 사용할 채팅목록을 불러왔습니다.", chatService.getRetrospectChats(chatroomId));
+	}
+
+	// 회고 단계 히스토리 불러오기
+	@GetMapping("/chatrooms/{chatroomId}/retrospect")
+	public Response<List<ChatResponse.RetrospectHistory>> getRetrospects(@PathVariable("chatroomId") Long chatroomId) {
+		return Response.success("회고 단계 히스토리를 불러왔습니다.", chatService.getRetrospectHistories(chatroomId));
 	}
 }

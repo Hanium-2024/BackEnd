@@ -7,15 +7,16 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.hanieum.llmproject.dto.chat.ChatRequest;
+import com.hanieum.llmproject.dto.chat.ChatResponse;
 import com.hanieum.llmproject.exception.ErrorCode;
 import com.hanieum.llmproject.exception.errortype.CustomException;
-import com.hanieum.llmproject.model.Category;
+import com.hanieum.llmproject.model.*;
+import com.hanieum.llmproject.repository.RetrospectQuestionRepository;
+import com.hanieum.llmproject.repository.RetrospectRepository;
 import net.sourceforge.plantuml.SourceStringReader;
 import org.springframework.stereotype.Service;
 
 import com.hanieum.llmproject.dto.chat.ChatMessage;
-import com.hanieum.llmproject.model.Chat;
-import com.hanieum.llmproject.model.Chatroom;
 import com.hanieum.llmproject.repository.ChatRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,8 @@ public class ChatService {
 	private final ChatRepository chatRepository;
 	private final ChatroomService chatroomService;
 	private final GPTService gptService;
+	private final RetrospectQuestionRepository retrospectQuestionRepository;
+	private final RetrospectRepository retrospectRepository;
 
 	// 채팅내역 자동저장기능 (사용자답변, gpt답변분리)
 	private void saveChat(Long chatroomId, Category category, boolean isUserMessage, boolean isImage, String message) {
@@ -88,23 +91,66 @@ public class ChatService {
 
 	@Transactional
 	public String askRetrospect(Long chatroomId, List<ChatRequest.Retrospect> retrospects) {
-		chatroomService.findChatroom(chatroomId);
+		Chatroom chatroom = chatroomService.findChatroom(chatroomId);
+		Retrospect retrospect = new Retrospect(chatroom);
 
 		List<ChatMessage> messages = new ArrayList<>();
 
-		// todo: title 과 KPT 합치기 작업 -> question
-		for (ChatRequest.Retrospect retrospect : retrospects) {
-            String question = "회고할 내용 : " + retrospect.topic() + "\n" +
-                    "Keep 항목 : " + retrospect.keepContent() + "\n" +
-                    "Problem 항목 : " + retrospect.problemContent() + "\n" +
-                    "Try 항목 : " + retrospect.tryContent() + "\n\n";
+		for (ChatRequest.Retrospect retrospectDto : retrospects) {
+            String question = "회고할 내용 : " + retrospectDto.topic() + "\n" +
+                    "Keep 항목 : " + retrospectDto.keepContent() + "\n" +
+                    "Problem 항목 : " + retrospectDto.problemContent() + "\n" +
+                    "Try 항목 : " + retrospectDto.tryContent() + "\n\n";
 
+			RetrospectQuestion retrospectQuestion = new RetrospectQuestion(
+					retrospect,
+					retrospectDto.topic(),
+					retrospectDto.keepContent(),
+					retrospectDto.problemContent(),
+					retrospectDto.tryContent()
+			);
+
+			retrospectQuestionRepository.save(retrospectQuestion);
 			messages.add(new ChatMessage("user", question));
 		}
 
 		String response = gptService.requestGPT(messages, Category.RETROSPECT);
+		retrospect.setResponse(response);
+
+		retrospectRepository.save(retrospect);
 
 		return response;
+	}
+
+	public List<ChatResponse.RetrospectHistory> getRetrospectHistories(Long chatroomId) {
+		Chatroom chatroom = chatroomService.findChatroom(chatroomId);
+
+		List<Retrospect> retrospects = retrospectRepository.findAllByChatroom(chatroom);
+		retrospects.sort(Comparator.comparing(Retrospect::getCreatedAt));
+
+		List<ChatResponse.RetrospectHistory> result = new ArrayList<>();
+
+		for (Retrospect retrospect : retrospects) {
+			List<RetrospectQuestion> questions = retrospectQuestionRepository.findAllByRetrospect(retrospect);
+
+			List<ChatResponse.RetrospectQuestionHistory> questionHistories = questions.stream()
+					.sorted(Comparator.comparing(RetrospectQuestion::getCreatedAt))
+					.map(question -> new ChatResponse.RetrospectQuestionHistory(
+						new String(question.getTopic()),
+							question.getKeepContent(),
+							question.getProblemContent(),
+							question.getTryContent()))
+					.toList();
+
+			ChatResponse.RetrospectHistory retrospectHistory = new ChatResponse.RetrospectHistory(
+					questionHistories,
+					new String(retrospect.getResponse())
+			);
+
+			result.add(retrospectHistory);
+		}
+
+		return result;
 	}
 
 	// gpt질문하는 메인기능

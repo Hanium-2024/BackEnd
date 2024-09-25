@@ -41,7 +41,6 @@ public class ChatroomService {
 			.orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 	}
 
-
 	@Transactional
 	public ChatroomResponse.Detail createChatroom(String loginId, String title) {
 		User user = loadUser(loginId);
@@ -52,7 +51,6 @@ public class ChatroomService {
 		Chatroom savedChatroom = chatroomRepository.save(chatroom);
 		return new ChatroomResponse.Detail(savedChatroom.getChatroomId(), title);
 	}
-
 
 	@Transactional
 	public void deleteChatroom(String loginId, Long chatroomId) {

@@ -1,5 +1,6 @@
 package com.hanieum.llmproject.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ public class Chatroom {
 	private String title;
 
 	@OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Chat> chats;
+	private List<Chat> chats = new ArrayList<>();
 
 	// 채팅저장관련
 	public Chatroom(User user, String title) {
