@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.hanieum.llmproject.dto.ChatroomResponse;
+import com.hanieum.llmproject.model.Retrospect;
+import com.hanieum.llmproject.model.RetrospectQuestion;
+import com.hanieum.llmproject.repository.RetrospectQuestionRepository;
+import com.hanieum.llmproject.repository.RetrospectRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hanieum.llmproject.exception.ErrorCode;
 import com.hanieum.llmproject.exception.errortype.CustomException;
-import com.hanieum.llmproject.model.Category;
 import com.hanieum.llmproject.model.Chatroom;
 import com.hanieum.llmproject.model.User;
 import com.hanieum.llmproject.repository.ChatroomRepository;
@@ -22,6 +25,8 @@ public class ChatroomService {
 
 	private final UserService userService;
 	private final ChatroomRepository chatroomRepository;
+	private final RetrospectRepository retrospectRepository;
+	private final RetrospectQuestionRepository retrospectQuestionRepository;
 
 	public Map<Long, String> getChatrooms(String loginId) {
 		User user = loadUser(loginId);
@@ -41,7 +46,6 @@ public class ChatroomService {
 			.orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 	}
 
-
 	@Transactional
 	public ChatroomResponse.Detail createChatroom(String loginId, String title) {
 		User user = loadUser(loginId);
@@ -53,7 +57,6 @@ public class ChatroomService {
 		return new ChatroomResponse.Detail(savedChatroom.getChatroomId(), title);
 	}
 
-
 	@Transactional
 	public void deleteChatroom(String loginId, Long chatroomId) {
 		// 채팅방 찾기
@@ -61,11 +64,25 @@ public class ChatroomService {
 		Chatroom chatroom = chatroomRepository.findByUserAndId(user, chatroomId)
 			.orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 
+		// 회고 카테고리 채팅 삭제
+		deleteRetrospectChat(chatroom);
+
 		// TODO cascade삭제
 		// 채팅삭제
 		// 채팅방삭제
 		chatroomRepository.delete(chatroom);
+	}
 
+	private void deleteRetrospectChat(Chatroom chatroom) {
+		List<Retrospect> retrospects = retrospectRepository.findAllByChatroom(chatroom);
+
+		for (Retrospect retrospect : retrospects) {
+			List<RetrospectQuestion> retrospectQuestions = retrospectQuestionRepository.findAllByRetrospect(retrospect);
+
+            retrospectQuestionRepository.deleteAll(retrospectQuestions);
+		}
+
+		retrospectRepository.deleteAll(retrospects);
 	}
 
 }

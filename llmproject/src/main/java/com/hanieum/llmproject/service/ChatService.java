@@ -1,24 +1,22 @@
 package com.hanieum.llmproject.service;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 
+import com.hanieum.llmproject.dto.chat.ChatRequest;
+import com.hanieum.llmproject.dto.chat.ChatResponse;
 import com.hanieum.llmproject.exception.ErrorCode;
 import com.hanieum.llmproject.exception.errortype.CustomException;
-import com.hanieum.llmproject.model.Category;
+import com.hanieum.llmproject.model.*;
+import com.hanieum.llmproject.repository.RetrospectQuestionRepository;
+import com.hanieum.llmproject.repository.RetrospectRepository;
 import net.sourceforge.plantuml.SourceStringReader;
 import org.springframework.stereotype.Service;
 
-import com.hanieum.llmproject.config.aiconfig.ChatGptConfig;
 import com.hanieum.llmproject.dto.chat.ChatMessage;
-import com.hanieum.llmproject.dto.chat.ChatRequestDto;
-import com.hanieum.llmproject.model.Chat;
-import com.hanieum.llmproject.model.Chatroom;
 import com.hanieum.llmproject.repository.ChatRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,17 +30,14 @@ public class ChatService {
 
 	private final ChatRepository chatRepository;
 	private final ChatroomService chatroomService;
-	private final DallEService dallEService;
-	private final UserService userService;
 	private final GPTService gptService;
+	private final RetrospectQuestionRepository retrospectQuestionRepository;
+	private final RetrospectRepository retrospectRepository;
 
 	// 채팅내역 자동저장기능 (사용자답변, gpt답변분리)
 	private void saveChat(Long chatroomId, Category category, boolean isUserMessage, boolean isImage, String message) {
 
 		Chatroom chatroom = chatroomService.findChatroom(chatroomId);
-		if (chatroom == null) {
-			throw new CustomException(ErrorCode.CHATROOM_NOT_FOUND);
-		}
 
 		Chat chat = new Chat(chatroom, category, isUserMessage, isImage, message);
 
@@ -55,31 +50,17 @@ public class ChatService {
 		List<ChatMessage> messages = new ArrayList<>();
 
 		Chatroom chatroom = chatroomService.findChatroom(chatroomId);
-		if (chatroom == null) {
-			throw new CustomException(ErrorCode.CHATROOM_NOT_FOUND);
-		}
 
 		// categoryType과 동일한 타입의 채팅목록만 불러오기
 		List<Chat> chatHistory = chatRepository.findAllByChatroomAndCategory(chatroom, category);
 
 		for (Chat chat : chatHistory) {
 			messages.add(new ChatMessage(chat.isUserMessage() ? "user" : "assistant", chat.getMessage()));
-			//System.out.println("이전채팅 = " + chat.getMessage());
 		}
 
 		// 새 메세지 추가
 		messages.add(new ChatMessage("user", question));
 		return messages;
-	}
-
-	// 채팅방 제목설정
-	private String createTitle(String question) {
-		// 문장이 20보다 작은경우 처리
-		int endIndex = Math.min(question.length(), 10);
-		// 0 ~ 20 문자열 추출
-		String title = question.substring(0, endIndex);
-		//System.out.println("substring = " + title);
-		return title;
 	}
 
 	// 채팅목록 카테고리별로 불러오기
@@ -108,23 +89,88 @@ public class ChatService {
 		}
 	}
 
-	// gpt질문하는 메인기능
-	public String ask(String loginId, Long chatroomId, String categoryType, String question) throws IOException {
+	@Transactional
+	public String askRetrospect(Long chatroomId, List<ChatRequest.Retrospect> retrospects) {
 		Chatroom chatroom = chatroomService.findChatroom(chatroomId);
+		Retrospect retrospect = new Retrospect(chatroom);
+
+		List<ChatMessage> messages = new ArrayList<>();
+
+		for (ChatRequest.Retrospect retrospectDto : retrospects) {
+            String question = "회고할 내용 : " + retrospectDto.topic() + "\n" +
+                    "Keep 항목 : " + retrospectDto.keepContent() + "\n" +
+                    "Problem 항목 : " + retrospectDto.problemContent() + "\n" +
+                    "Try 항목 : " + retrospectDto.tryContent() + "\n\n";
+
+			RetrospectQuestion retrospectQuestion = new RetrospectQuestion(
+					retrospect,
+					retrospectDto.topic(),
+					retrospectDto.keepContent(),
+					retrospectDto.problemContent(),
+					retrospectDto.tryContent()
+			);
+
+			retrospectQuestionRepository.save(retrospectQuestion);
+			messages.add(new ChatMessage("user", question));
+		}
+
+		String response = gptService.requestGPT(messages, Category.RETROSPECT);
+		retrospect.setResponse(response);
+
+		retrospectRepository.save(retrospect);
+
+		return response;
+	}
+
+	public List<ChatResponse.RetrospectHistory> getRetrospectHistories(Long chatroomId) {
+		Chatroom chatroom = chatroomService.findChatroom(chatroomId);
+
+		List<Retrospect> retrospects = retrospectRepository.findAllByChatroom(chatroom);
+		retrospects.sort(Comparator.comparing(Retrospect::getCreatedAt));
+
+		List<ChatResponse.RetrospectHistory> result = new ArrayList<>();
+
+		for (Retrospect retrospect : retrospects) {
+			List<RetrospectQuestion> questions = retrospectQuestionRepository.findAllByRetrospect(retrospect);
+
+			List<ChatResponse.RetrospectQuestionHistory> questionHistories = questions.stream()
+					.sorted(Comparator.comparing(RetrospectQuestion::getCreatedAt))
+					.map(question -> new ChatResponse.RetrospectQuestionHistory(
+						new String(question.getTopic()),
+							question.getKeepContent(),
+							question.getProblemContent(),
+							question.getTryContent()))
+					.toList();
+
+			ChatResponse.RetrospectHistory retrospectHistory = new ChatResponse.RetrospectHistory(
+					questionHistories,
+					new String(retrospect.getResponse())
+			);
+
+			result.add(retrospectHistory);
+		}
+
+		return result;
+	}
+
+	// gpt질문하는 메인기능
+	public String ask(Long chatroomId, String categoryType, String question) throws IOException {
+		chatroomService.findChatroom(chatroomId);
 
 		// 카테고리 불러오기
 		Category category = loadCategory(categoryType);
 
 		// gpt요청데이터 셋팅
-		ChatRequestDto chatRequestDto = ChatRequestDto.builder().
-			model(ChatGptConfig.CHAT_MODEL).
-			maxTokens(ChatGptConfig.MAX_TOKEN).
-			temperature(ChatGptConfig.TEMPERATURE).
-			messages(gptService.applyPromptEngineering(compositeMessage(chatroomId, category, question), category)).
-			build();
+//		ChatRequestDto chatRequestDto = ChatRequestDto.builder().
+//			model(ChatGptConfig.CHAT_MODEL).
+//			maxTokens(ChatGptConfig.MAX_TOKEN).
+//			temperature(ChatGptConfig.TEMPERATURE).
+//			messages(gptService.applyPromptEngineering(compositeMessage(chatroomId, category, question), category)).
+//			build();
 
 		// gpt 응답
-		String response = gptService.gptRequest(chatRequestDto);
+//		String response = gptService.gptRequest(chatRequestDto);
+		String response = gptService.requestGPT(compositeMessage(chatroomId, category, question), category);
 
 		// 디자인카테고리의 답변일때(DESIGN)
 		if (category== Category.DESIGN) {
@@ -156,7 +202,7 @@ public class ChatService {
 				return base64ImageJson + "\n\n" + answers[1].replace("A2:", "").trim();
 			}
 
-		// 일반카테고리의 답변일때(PLAN, CODE, RETROSPECT)
+		// PLAN, CODE 카테고리의 답변일때
 		} else {
 			saveChat(chatroomId, category,true, false, question);  // 질문저장
 			saveChat(chatroomId, category,false, false, response); // 답변저장
