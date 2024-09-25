@@ -22,28 +22,20 @@ public class Chatroom {
 	@ManyToOne
 	@JoinColumn(name = "USER_ID")
 	private User user;
-	private boolean saved;
 	private String title;
+
+	@OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Chat> chats;
 
 	// 채팅저장관련
 	public Chatroom(User user, String title) {
 		this.user = user;
 		this.title = title;
-		this.saved = true;
 	}
 
 	public static Map<Long, String> getSavedChatrooms(List<Chatroom> chatroomList) {
 		return chatroomList.stream()
-			.filter(Chatroom::isSaved)
 			.collect(Collectors.toMap(Chatroom::getChatroomId, Chatroom::getTitle));
-	}
-
-	public boolean isSaved() {
-		return saved;
-	}
-
-	public void setSaved(boolean saved) {
-		this.saved = saved;
 	}
 
 	public Long getChatroomId() {
