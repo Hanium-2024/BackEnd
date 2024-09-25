@@ -41,6 +41,7 @@ public class ChatroomService {
 			.orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 	}
 
+
 	@Transactional
 	public ChatroomResponse.Detail createChatroom(String loginId, String title) {
 		User user = loadUser(loginId);
@@ -52,19 +53,6 @@ public class ChatroomService {
 		return new ChatroomResponse.Detail(savedChatroom.getChatroomId(), title);
 	}
 
-	// ---채팅 사용자 저장 관련---
-	@Transactional
-	public void saveChatroom(String loginId, Long chatroomId) {
-		// 채팅방 찾기
-		User user = loadUser(loginId);
-		Chatroom chatroom = chatroomRepository.findByUserAndId(user, chatroomId)
-			.orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
-
-		// 저장상태 업데이트
-		if (!chatroom.isSaved()) {
-			chatroom.setSaved(true);
-		}
-	}
 
 	@Transactional
 	public void deleteChatroom(String loginId, Long chatroomId) {
@@ -73,10 +61,11 @@ public class ChatroomService {
 		Chatroom chatroom = chatroomRepository.findByUserAndId(user, chatroomId)
 			.orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 
-		// 저장상태 업데이트
-		if (chatroom.isSaved()) {
-			chatroom.setSaved(false);
-		}
+		// TODO cascade삭제
+		// 채팅삭제
+		// 채팅방삭제
+		chatroomRepository.delete(chatroom);
+
 	}
 
 }
