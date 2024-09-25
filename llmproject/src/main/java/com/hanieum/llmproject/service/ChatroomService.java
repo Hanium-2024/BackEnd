@@ -41,16 +41,6 @@ public class ChatroomService {
 			.orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 	}
 
-	// 찾고 없으면 새채팅방 자동생성(채팅방없을시createChatroom호출)
-//	public Long findOrCreateChatroom(String userId, Long chatroomId, String title) {
-//		User user = loadUser(userId);
-//
-//		// 채팅방 (사용자, 카테고리, 채팅방아이디 불일치 -> 카테고리항목에 새로운 채팅방생성)
-//		Chatroom chatroom = chatroomRepository.findByUserAndId(user, chatroomId)
-//			.orElseGet(() -> createChatRoom(userId, chatroomId, title));
-//		return chatroom.getChatroomId();
-//	}
-
 	@Transactional
 	public ChatroomResponse.Detail createChatroom(String loginId, String title) {
 		User user = loadUser(loginId);

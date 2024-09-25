@@ -1,7 +1,6 @@
 package com.hanieum.llmproject.model;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
