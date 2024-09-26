@@ -2,6 +2,7 @@ package com.hanieum.llmproject.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import com.hanieum.llmproject.dto.chat.ChatRequest;
 import com.hanieum.llmproject.dto.chat.ChatResponse;
@@ -67,7 +68,7 @@ public class ChatController {
 
 	// 회고에서 사용할 채팅목록 불러오기
 	@GetMapping("/chats/retrospect/{chatroomId}")
-	public Response<List<String>> getRetrospectChats(@PathVariable("chatroomId") Long chatroomId) {
+	public Response<List<Map<String, String>>> getRetrospectChats(@PathVariable("chatroomId") Long chatroomId) {
 		return Response.success("회고에서 사용할 채팅목록을 불러왔습니다.", chatService.getRetrospectChats(chatroomId));
 	}
 

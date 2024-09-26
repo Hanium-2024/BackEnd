@@ -70,6 +70,10 @@ public class Chat {
 		return new String(this.content);
 	}
 
+	public String getCategoryName() {
+		return this.category.toString();
+	}
+
 	public boolean isUserMessage() {
 		return this.contentType == ContentType.Prompt;
 	}

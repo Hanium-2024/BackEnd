@@ -1,10 +1,7 @@
 package com.hanieum.llmproject.service;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import com.hanieum.llmproject.dto.chat.ChatRequest;
 import com.hanieum.llmproject.dto.chat.ChatResponse;
@@ -255,12 +252,17 @@ public class ChatService {
 	}
 
 	// 회고를 위해 선택된 채팅목록 불러오기 기능
-	public List<String> getRetrospectChats(Long chatroomId) {
+	public List<Map<String, String>> getRetrospectChats(Long chatroomId) {
 		Chatroom chatroom = chatroomService.findChatroom(chatroomId);
 		return chatRepository.findAllByChatroomAndRetrospect(chatroom, true)
 				.stream()
 				.sorted(Comparator.comparing(Chat::getOutputTime))
-				.map(Chat::getMessage)
+				.map(chat -> {
+					Map<String, String> chatInfo = new HashMap<>();
+					chatInfo.put("message", chat.getMessage());
+					chatInfo.put("categoryType", chat.getCategoryName());
+					return chatInfo;
+				})
 				.toList();
 	}
 }
