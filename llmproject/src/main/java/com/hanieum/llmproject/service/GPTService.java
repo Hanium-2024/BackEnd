@@ -26,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GPTService {
     private static final String CHAT_MODEL = "gpt-4o-mini";
-    private static final Integer MAX_TOKEN = 1000;
+    private static final Integer MAX_TOKEN = 2000;
     private static final Double TEMPERATURE = 0.6;
 
     @Value("#{'${openai.key}'.trim()}")
