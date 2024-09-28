@@ -109,6 +109,9 @@ public class ChatService {
 
 			retrospectQuestionRepository.save(retrospectQuestion);
 			messages.add(new ChatMessage("user", question));
+
+			// 선택된 채팅 리셋시키기
+			checkRetrospectChat(retrospectDto.chatId());
 		}
 
 		String response = gptService.requestGPT(messages, Category.RETROSPECT);
