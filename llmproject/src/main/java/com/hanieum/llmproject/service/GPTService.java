@@ -7,10 +7,8 @@ import com.hanieum.llmproject.dto.chat.ChatMessage;
 import com.hanieum.llmproject.exception.ErrorCode;
 import com.hanieum.llmproject.exception.errortype.CustomException;
 import com.hanieum.llmproject.model.Category;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,16 +24,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GPTService {
     private static final String CHAT_MODEL = "gpt-4o-mini";
-    private static final Integer MAX_TOKEN = 2000;
+    private static final Integer MAX_TOKEN = 4000;
     private static final Double TEMPERATURE = 0.6;
 
     @Value("#{'${openai.key}'.trim()}")
     private String token;
 
     private final ChatroomService chatroomService;
+    private final ResourceLoadService resourceLoadService;
 
     // 프롬프트엔지니어링 부분
-    public List<ChatMessage> applyPromptEngineering(List<ChatMessage> messages, Category category) {
+    public List<ChatMessage> applyPromptEngineering(List<ChatMessage> messages, Category category) throws IOException {
 
         // 카테고리별로 프롬프트 엔지니어링 하기
         // 공통 시스템 메세지
@@ -86,16 +85,22 @@ public class GPTService {
             messages.add(8, new ChatMessage("system", "코드를 생성했을 때, 코드에서 4자리의 공백은 하나의 '\t'로 치환해서 값을 응답해줘"));
 
         } else if (category == Category.RETROSPECT) { // 회고 내용에 맞는 적합한 답변을 지시
+
+            String prompt = resourceLoadService.loadPrompt();
+
             // 개별 시스템 메시지 추가
-            messages.add(1, new ChatMessage("system", "너는 소프트웨어 개발 방법 중 애자일 방식의 회고를 도와주는 모델이야. 사용자의 요청에 따라 피드백을 제공해줘"));
-            messages.add(2, new ChatMessage("system", "사용자가 회고할 내용과 KPT 형식으로 내용을 입력할 거야.사용자의 입력을 분석하여 각 항목에 맞는 피드백을 제공해줘."));
+            messages.add(1, new ChatMessage("system", prompt));
+            messages.add(2, new ChatMessage("system", "보고서형태로 출력해줘"));
+
+
+
 
         }
 
         return messages;
     }
 
-    public String requestGPT(List<ChatMessage> messages, Category category) {
+    public String requestGPT(List<ChatMessage> messages, Category category) throws IOException {
         List<ChatMessage> chatMessages = applyPromptEngineering(messages, category);
         GptRequest gptRequest = new GptRequest(chatMessages);
 
