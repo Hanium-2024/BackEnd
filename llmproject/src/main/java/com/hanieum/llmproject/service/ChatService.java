@@ -61,7 +61,7 @@ public class ChatService {
 	}
 
 	// 채팅목록 카테고리별로 불러오기
-	public List<String> getChats(Long chatroomId, String categoryType) {
+	public List<Map<String, String>> getChats(Long chatroomId, String categoryType) {
 		var chatroom = chatroomService.findChatroom(chatroomId);
 
 		Category category = loadCategory(categoryType);
@@ -69,8 +69,15 @@ public class ChatService {
 		return chatRepository.findAllByChatroomAndCategory(chatroom, category)
 			.stream()
 			.sorted(Comparator.comparing(Chat::getOutputTime))
-			.map(Chat::getMessage)
+			.map(chat -> {
+				Map<String, String> chatInfo = new HashMap<>();
+				chatInfo.put("chatId", chat.getId().toString());
+				chatInfo.put("message", chat.getMessage());
+				return chatInfo;
+			})
 			.toList();
+
+
 	}
 
 
@@ -112,6 +119,7 @@ public class ChatService {
 		}
 
 		String response = gptService.requestGPT(messages, Category.RETROSPECT);
+		System.out.println("response = " + response);
 		retrospect.setResponse(response);
 
 		retrospectRepository.save(retrospect);
