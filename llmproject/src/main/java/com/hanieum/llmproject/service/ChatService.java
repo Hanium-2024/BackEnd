@@ -94,7 +94,7 @@ public class ChatService {
 	}
 
 	@Transactional
-	public String askRetrospect(Long chatroomId, List<ChatRequest.Retrospect> retrospects) {
+	public String askRetrospect(Long chatroomId, List<ChatRequest.Retrospect> retrospects) throws IOException {
 		Chatroom chatroom = chatroomService.findChatroom(chatroomId);
 		Retrospect retrospect = new Retrospect(chatroom);
 
@@ -165,16 +165,7 @@ public class ChatService {
 		// 카테고리 불러오기
 		Category category = loadCategory(categoryType);
 
-		// gpt요청데이터 셋팅
-//		ChatRequestDto chatRequestDto = ChatRequestDto.builder().
-//			model(ChatGptConfig.CHAT_MODEL).
-//			maxTokens(ChatGptConfig.MAX_TOKEN).
-//			temperature(ChatGptConfig.TEMPERATURE).
-//			messages(gptService.applyPromptEngineering(compositeMessage(chatroomId, category, question), category)).
-//			build();
-
 		// gpt 응답
-//		String response = gptService.gptRequest(chatRequestDto);
 		String response = gptService.requestGPT(compositeMessage(chatroomId, category, question), category);
 
 		// 디자인카테고리의 답변일때(DESIGN)
@@ -188,21 +179,16 @@ public class ChatService {
 
 			// A1: 없음, A2: text 일때
 			if (answers[0].replace("A1:", "").trim().equals("없음")) {
-				//System.out.println("Answer 1: 생성할 plant uml코드가 없습니다.");
-				//System.out.println("Answer 2: " + answers[1].replace("A2:", "").trim());
 				saveChat(chatroomId, category, false, false, answers[1].replace("A2:", "").trim());
 				return answers[1].replace("A2:", "").trim();
 
 			// A1: plantUml코드, A2: text 일때
 			} else {
 				// plantuml로 코드전달 및 저장
-				//System.out.println("Answer 1: " + answers[0].replace("A1:", "").trim());
-				// saveChat(chatroomId, true, false, answers[0].replace("A1:", "").trim()); // 확인용 임시코드저장
 				String base64ImageJson = plantUml(answers[0].replace("A1:", "").trim());
 				saveChat(chatroomId, category,false, true, base64ImageJson);
 
 				// text설명 부분 저장
-				//System.out.println("Answer 2: " + answers[1].replace("A2:", "").trim());
 				saveChat(chatroomId, category,false, false, answers[1].replace("A2:", "").trim());
 				return base64ImageJson + "\n\n" + answers[1].replace("A2:", "").trim();
 			}

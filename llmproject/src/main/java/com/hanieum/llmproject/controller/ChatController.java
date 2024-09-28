@@ -48,7 +48,7 @@ public class ChatController {
 	@PostMapping("/main/ask/{chatroomId}/retrospect")
 	public Response<?> askRetrospect(Authentication authentication,
 									@PathVariable("chatroomId") Long chatroomId,
-									@RequestBody List<ChatRequest.Retrospect> request) {
+									@RequestBody List<ChatRequest.Retrospect> request) throws IOException {
 		return Response.success("질문 성공", chatService.askRetrospect(chatroomId, request));
 	}
 
