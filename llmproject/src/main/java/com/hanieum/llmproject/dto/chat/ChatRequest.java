@@ -5,6 +5,7 @@ public final class ChatRequest {
 	}
 
 	public record Retrospect(
+			Long chatId,
 			String topic,
 			String keepContent,
 			String problemContent,
