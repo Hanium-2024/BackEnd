@@ -74,6 +74,8 @@ public class Chat {
 		return this.category.toString();
 	}
 
+	public Long getId() { return this.id;}
+
 	public boolean isUserMessage() {
 		return this.contentType == ContentType.Prompt;
 	}

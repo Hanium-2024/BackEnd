@@ -48,12 +48,12 @@ public class ChatController {
 	@PostMapping("/main/ask/{chatroomId}/retrospect")
 	public Response<?> askRetrospect(Authentication authentication,
 									@PathVariable("chatroomId") Long chatroomId,
-									@RequestBody List<ChatRequest.Retrospect> request) {
+									@RequestBody List<ChatRequest.Retrospect> request) throws IOException {
 		return Response.success("질문 성공", chatService.askRetrospect(chatroomId, request));
 	}
 
 	@GetMapping("/chats/{chatroomId}")
-	public Response<List<String>> getChats(@PathVariable("chatroomId") Long chatroomId,
+	public Response<List<Map<String, String>>> getChats(@PathVariable("chatroomId") Long chatroomId,
 										   @RequestParam("categoryType") String categoryType) {
 		return Response.success("채팅을 불러왔습니다.", chatService.getChats(chatroomId, categoryType));
 	}
