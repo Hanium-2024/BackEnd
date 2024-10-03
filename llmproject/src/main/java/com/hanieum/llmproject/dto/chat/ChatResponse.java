@@ -16,4 +16,11 @@ public class ChatResponse {
             String response
     ) {
     }
+
+    public record CommonHistory(
+            String chatId,
+            boolean selected,
+            String message
+    ) {
+    }
 }
