@@ -42,17 +42,16 @@ public class GPTService {
         //messages.add(1,new ChatMessage("system", "주로 초보개발자가 사용하기때문에 자세하고 친절하게 알려줘야해."));
 
         if (category == Category.PLAN) { // 계획단계에 맞는 적합한 답변을 지시
+            messages.add(1, new ChatMessage("system", resourceLoadService.loadPromptPLAN()));
             // 공통프롬프트
-            messages.add(1, new ChatMessage("system", "너는 소프트웨어 개발의 계획단계에 필요한 기능명세서를 출력해주는 모델이야."));
-            messages.add(2, new ChatMessage("system", "소프트웨어 개발의 계획단계에 필요한 기능명세서 요청과 관련없는 질문에 대해서는 사용자에게 질문을 재입력하도록 요구해."));
-            messages.add(3, new ChatMessage("system", "프로그램을 개발하기위해 필요한 기능명세서를 출력해주는거니까 표형태로 가시성있게 답변을 해줘야해."));
-            messages.add(4, new ChatMessage("system", "요청받은것에 대해 최대한 상세하게 많은 기능을 명세해줘야해."));
+//            messages.add(1, new ChatMessage("system", "너는 소프트웨어 개발의 계획단계에 필요한 기능명세서를 출력해주는 모델이야."));
+//            messages.add(2, new ChatMessage("system", "소프트웨어 개발의 계획단계에 필요한 기능명세서 요청과 관련없는 질문에 대해서는 사용자에게 질문을 재입력하도록 요구해."));
+//            messages.add(3, new ChatMessage("system", "프로그램을 개발하기위해 필요한 기능명세서를 출력해주는거니까 표형태로 가시성있게 답변을 해줘야해."));
+//            messages.add(4, new ChatMessage("system", "요청받은것에 대해 최대한 상세하게 많은 기능을 명세해줘야해."));
+//
+//            // 부가프롬프트
+//            messages.add(5, new ChatMessage("system", "기능 명세서를 작성하기에 부족한 정보를 제시한다면 너가 스스로 질문을 되물어서 자세한 정보를 받아내야해."));
 
-            // 부가프롬프트
-            messages.add(5, new ChatMessage("system", "기능 명세서를 작성하기에 부족한 정보를 제시한다면 너가 스스로 질문을 되물어서 자세한 정보를 받아내야해."));
-
-            //ChatMessage userMessage = messages.get(messages.size() - 1);
-            //userMessage.setContent("다음에 작성된 내용에 대해 기능명세서를 작성해줘 : " + userMessage.getContent());
 
         } else if (category == Category.DESIGN) {
             // 공통 프롬프트 메시지
