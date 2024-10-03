@@ -107,6 +107,7 @@ public class ChatService {
                     "Problem 항목 : " + retrospectDto.problemContent() + "\n" +
                     "Try 항목 : " + retrospectDto.tryContent() + "\n\n";
 
+
             RetrospectQuestion retrospectQuestion = new RetrospectQuestion(
                     retrospect,
                     retrospectDto.topic(),
@@ -124,7 +125,6 @@ public class ChatService {
         retrospect.setResponse(response);
 
         retrospectRepository.save(retrospect);
-
         return response;
     }
 
