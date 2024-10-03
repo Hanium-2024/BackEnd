@@ -53,7 +53,7 @@ public class ChatController {
 	}
 
 	@GetMapping("/chats/{chatroomId}")
-	public Response<List<Map<String, String>>> getChats(@PathVariable("chatroomId") Long chatroomId,
+	public Response<List<ChatResponse.CommonHistory>> getChats(@PathVariable("chatroomId") Long chatroomId,
 										   @RequestParam("categoryType") String categoryType) {
 		return Response.success("채팅을 불러왔습니다.", chatService.getChats(chatroomId, categoryType));
 	}
