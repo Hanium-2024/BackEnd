@@ -1,7 +1,6 @@
 package com.hanieum.llmproject.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 import org.springframework.stereotype.Service;
@@ -116,6 +115,7 @@ public class ChatService {
                     retrospectDto.tryContent()
             );
 
+            System.out.println(question);
             retrospectQuestionRepository.save(retrospectQuestion);
             messages.add(new ChatMessage("user", question));
         }
@@ -168,6 +168,7 @@ public class ChatService {
 
         // gpt 응답
         String response = gptService.requestGPT(compositeMessage(chatroomId, category, question), category);
+        log.info(response);
 
         // 디자인카테고리의 답변일때(DESIGN)
         if (category == Category.DESIGN) {
@@ -179,7 +180,7 @@ public class ChatService {
             String[] answers = response.split("A2:");
 
             // A1: 없음, A2: text 일때
-            if (answers[0].replace("A1:", "").trim().equals("없음")) {
+            if (answers[0].replace("A1:", "").trim().contains("없음")) {
                 saveChat(chatroomId, category, false, false, answers[1].replace("A2:", "").trim());
                 return answers[1].replace("A2:", "").trim();
 

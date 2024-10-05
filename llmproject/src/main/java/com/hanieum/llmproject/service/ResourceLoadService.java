@@ -15,13 +15,25 @@ public class ResourceLoadService {
     @Autowired
     private ResourceLoader resourceLoader;
 
-    public String loadPrompt() throws IOException {
-        Resource resource = resourceLoader.getResource("classpath:prompt/prompts.txt");
+    public String loadPromptPLAN() throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:prompt/prompt_plan.txt");
         return getString(resource);
     }
 
-    public String loadPromptPLAN() throws IOException {
-        Resource resource = resourceLoader.getResource("classpath:prompt/prompt_plan.txt");
+    public String loadPromptDesign() throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:prompt/prompt_design.txt");
+        return getString(resource);
+    }
+
+    public String loadPromptCode() throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:prompt/prompt_code.txt");
+        return getString(resource);
+    }
+
+
+
+    public String loadPromptRetrospect() throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:prompt/prompts.txt");
         return getString(resource);
     }
 
